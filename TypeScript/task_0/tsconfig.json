@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "rootDir": "./",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "es6",
@@ -12,8 +11,6 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "lib": ["ES2020", "DOM"],
-    "strict": true,
-    "ignoreDeprecations": "5.0"
-  },
-  "include": ["js/**/*"]
+    "strict": true
+  }
 }

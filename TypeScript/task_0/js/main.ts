@@ -1,56 +1,42 @@
 interface Student {
-  firstName: string;
-  lastName: string;
-  age: number;
-  location: string;
+    firstName: string;
+    lastName: string;
+    age: number;
+    location: string;
 }
 
 const student1: Student = {
-  firstName: "John",
-  lastName: "Doe",
+  firstName: "Alice",
+  lastName: "Smith",
   age: 20,
-  location: "New York"
+  location: "New York",
 };
 
 const student2: Student = {
-  firstName: "Jane",
-  lastName: "Smith",
+  firstName: "Bob",
+  lastName: "Johnson",
   age: 22,
-  location: "London"
+  location: "Los Angeles",
 };
 
 const studentsList: Student[] = [student1, student2];
 
-const table = document.createElement('table');
-const tableHeader = document.createElement('thead');
-const headerRow = document.createElement('tr');
+const table: HTMLTableElement = document.createElement("table");
+const tbody: HTMLTableSectionElement = document.createElement("tbody");
 
-const th1 = document.createElement('th');
-th1.textContent = 'First Name';
-const th2 = document.createElement('th');
-th2.textContent = 'Location';
+studentsList.forEach((student: Student): void => {
+  const row: HTMLTableRowElement = document.createElement("tr");
 
-headerRow.appendChild(th1);
-headerRow.appendChild(th2);
-tableHeader.appendChild(headerRow);
-table.appendChild(tableHeader);
-
-const tableBody = document.createElement('tbody');
-
-studentsList.forEach((student) => {
-  const row = document.createElement('tr');
-  
-  const firstNameCell = document.createElement('td');
+  const firstNameCell: HTMLTableCellElement = document.createElement("td");
   firstNameCell.textContent = student.firstName;
-  
-  const locationCell = document.createElement('td');
+
+  const locationCell: HTMLTableCellElement = document.createElement("td");
   locationCell.textContent = student.location;
-  
+
   row.appendChild(firstNameCell);
   row.appendChild(locationCell);
-  
-  tableBody.appendChild(row);
+  tbody.appendChild(row);
 });
 
-table.appendChild(tableBody);
+table.appendChild(tbody);
 document.body.appendChild(table);
