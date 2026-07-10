@@ -20,6 +20,7 @@ module.exports = {
     },
   },
   devServer: {
+    contentBase: './public',
     port: 8564,
     open: true,
   },
