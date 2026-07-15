@@ -3,78 +3,52 @@ import CloseButton from '../assets/close-button.png';
 import NotificationItem from './NotificationItem';
 
 class Notifications extends PureComponent {
-  handleClick = () => console.log('Close button has been clicked');
-
   render() {
-    const {
-      notifications = [],
-      displayDrawer = false,
-      handleDisplayDrawer = () => {},
-      handleHideDrawer = () => {},
-      markNotificationAsRead = () => {},
-    } = this.props;
-
-    const isEmpty = notifications.length === 0;
-
     return (
-      <div>
-        <p
-          className="notification-title flex justify-end cursor-pointer"
-          onClick={handleDisplayDrawer}
-        >
-          Your notifications
-        </p>
-
-        <div
-          className="
-            w-[400px] ml-auto border-2 border-dashed border-[var(--main-color)] p-2
-            max-[912px]:w-full max-[912px]:fixed max-[912px]:inset-0
-            max-[912px]:z-50 max-[912px]:bg-white max-[912px]:p-3
-          "
-        >
-          {displayDrawer && (
-            <div className="notification-items relative p-3 max-[912px]:h-full max-[912px]:overflow-y-auto">
-
-              {isEmpty ? (
-                <p>
-                  No new notification for now
-                </p>
-              ) : (
-                <>
-                  <button
-                    aria-label="Close"
-                    className="absolute top-2 right-2 w-6 h-6 cursor-pointer hover:opacity-70"
-                    onClick={() => {
-                      this.handleClick();
-                      handleHideDrawer();
-                    }}
-                  >
-                    <img src={CloseButton} alt="close" className="w-full h-full" />
-                  </button>
-
-                  <p className="mb-2">Here is the list of notifications</p>
-
-                  <ul className="space-y-2 max-[912px]:space-y-3">
-                    {notifications.map((notif) => (
-                      <NotificationItem
-                        key={notif.id}
-                        id={notif.id}
-                        type={notif.type}
-                        value={notif.value}
-                        html={notif.html}
-                        markAsRead={markNotificationAsRead}
-                      />
-                    ))}
-                  </ul>
-                </>
-              )}
-
-            </div>
-          )}
+      <div className='Notification-Component flex flex-wrap justify-end mr-2.5'>
+        <div className={`notification-title text-right w-full ${this.props.notifications.length > 0 && !this.props.displayDrawer ? ' animate-bounce' : ''}`}>
+          <p onClick={this.props.handleDisplayDrawer}>Your notifications</p>
         </div>
+        {
+          this.props.displayDrawer && <div className="notification-items flex flex-col md:flex-wrap border-dashed border-[var(--main-color)] border-[2.5px]
+            w-screen md:w-[25vw] min-h-screen md:min-h-0 p-3 md:p-[6px] fixed top-0 left-0 md:relative bg-white md:bg-transparent mb-4">
+            <div className='flex justify-between items-center w-full'>
+              {this.props.notifications.length !== 0 && <p>Here is the list of notifications</p>}
+              {this.props.notifications.length !== 0 && <button aria-label='Close' style={{
+                width: '1.75rem',
+                height: '1rem',
+                marginTop: '0.25rem',
+                marginLeft: 'auto',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+              onClick={this.props.handleHideDrawer}>
+                <img className='w-[50%] md:w-[70%]' src={CloseButton} />
+              </button>}
+            </div>
+            <ul className='w-full list-none md:list-[square] md:list-inside md:pl-1'>
+              {this.props.notifications.length===0 ? 'No new notification for now' :
+                this.props.notifications.map((notification) => (
+                <NotificationItem
+                  key={notification.id}
+                  type={notification.type}
+                  value={notification.value}
+                  html={notification.html}
+                  markAsRead={this.props.markNotificationAsRead}
+                  id={notification.id} />
+              ))}
+            </ul>
+          </div>
+        }
       </div>
-    );
+    )
   }
 }
+
+Notifications.defaultProps = {
+  notifications: [],
+  displayDrawer: false,
+};
 
 export default Notifications;

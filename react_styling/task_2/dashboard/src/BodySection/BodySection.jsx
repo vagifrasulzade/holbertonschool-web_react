@@ -1,14 +1,13 @@
-import { Component } from 'react';
+import { Component } from "react";
 
 class BodySection extends Component {
   render() {
-    const { title, children } = this.props;
-    return (
+    return(
       <div className="bodySection">
-        <h2>{title}</h2>
-        {children}
+        <h2>{ this.props.title }</h2>
+        {this.props.children}
       </div>
-    );
+    )
   }
 }
 

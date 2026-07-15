@@ -1,25 +1,22 @@
 function CourseListRow({ isHeader = false, textFirstCell = '', textSecondCell = null }) {
+  let trContent = <>
+    <td>{ textFirstCell }</td>
+    <td>{ textSecondCell }</td>
+  </>;
   if (isHeader) {
     if (textSecondCell === null) {
-      return (
-        <tr>
-          <th colSpan={2}>{textFirstCell}</th>
-        </tr>
-      );
+      trContent = <th colSpan={2}>{ textFirstCell }</th>
     }
-    return (
-      <tr>
-        <th>{textFirstCell}</th>
-        <th>{textSecondCell}</th>
-      </tr>
-    );
+    else {
+      trContent = <>
+        <th>{ textFirstCell }</th>
+        <th>{ textSecondCell }</th>
+      </>
+    }
   }
-  return (
-    <tr>
-      <td>{textFirstCell}</td>
-      <td>{textSecondCell}</td>
-    </tr>
-  );
+  return(
+    <tr>{ trContent }</tr>
+  )
 }
 
 export default CourseListRow;

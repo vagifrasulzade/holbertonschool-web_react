@@ -1,8 +1,6 @@
 import React from 'react';
-import { render, screen, cleanup } from '@testing-library/react';
 import WithLogging from './WithLogging';
-
-afterEach(cleanup)
+import { render, screen, cleanup } from '@testing-library/react';
 
 class MockApp extends React.Component {
   render () {
@@ -14,9 +12,16 @@ class MockApp extends React.Component {
   }
 }
 
-const MockWithHOC = WithLogging(MockApp)
+const MockAppWrapped = WithLogging(MockApp);
 
-test('can render the heading "Hello from Mock App Component"', () => {
-  render(<MockWithHOC />)
-  expect(screen.getByRole('heading', { name: /hello from mock app component/i })).toBeInTheDocument();
+describe('WithLogging component', () => {
+  afterEach( () => {
+    cleanup();
+  })
+
+  test("Vérification que le HOC renvoie un élément h1 avec le texte : 'Hello from Mock App Component'.", () => {
+    render(<MockAppWrapped />);
+    const MockAppHeading = screen.getByRole('heading', { level: 1, name: /Hello from Mock App Component/i });
+    expect(MockAppHeading).toBeInTheDocument();
+  });
 });

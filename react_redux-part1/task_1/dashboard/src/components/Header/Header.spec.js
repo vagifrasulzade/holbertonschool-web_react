@@ -1,78 +1,56 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import Header from './Header';
 
-export const convertHexToRGBA = (hexCode) => {
-  let hex = hexCode.replace('#', '');
+const userTest = {
+  email: 'fallen.albaz@gmail.com',
+  password: 'azertyuiop',
+  isLoggedIn: true,
+}
 
-  if (hex.length === 3) {
-    hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
-    console.log({hex})
-  }
+const defaultUser = {
+  email: '',
+  password: '',
+  isLoggedIn: false,
+}
 
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
+describe('Header component', () => {
+  test('Vérification texte h1 App-header', () => {
+    render(<Header user={defaultUser} logOut={() => {}} />);
+    const headerh1 = screen.getByRole('heading', { level: 1, name: /School dashboard/i });
+    expect(headerh1).toBeInTheDocument();
+  });
 
-  return { r, g, b };
-};
+  test('Vérification alt image App-header', () => {
+    render(<Header user={defaultUser} logOut={() => {}} />);
+    const headerImgAlt = screen.getByAltText(/holberton logo/i);
+    expect(headerImgAlt).toBeInTheDocument();
+  });
 
-test('should contain a <p/> element with specific text, <h1/>, and an <img/>', () => {
-  const defaultUser = {
-    email: '',
-    password: '',
-    isLoggedIn: false
-  };
+  // Tests avec le contexte
+  test("Vérification de l'absence de la section #logoutSection par défaut", () => {
+    render(<Header user={defaultUser} logOut={() => {}} />);
+    const section = document.querySelector('#logoutSection');
+    expect(section).not.toBeInTheDocument();
+  });
 
-  render(<Header user={defaultUser} logOut={jest.fn()} />);
+  test("Vérification de la présence de la section #logoutSection quand le contexte de l'user a isLoggedIn à true.", () => {
+    render(<Header user={userTest} logOut={() => {}} />);
+    const section = document.querySelector('#logoutSection');
+    expect(section).toBeInTheDocument();
+  });
 
-  const headingElement = screen.getByRole('heading', {name: /school Dashboard/i});
-  const imgElement = screen.getByAltText('holberton logo')
+  test("Vérification de l'appel à la fonction logOut quand on clique sur '(logout)' quand le contexte de l'user a isLoggedIn à true", async () => {
+    const user = userEvent.setup();
 
-  expect(headingElement).toBeInTheDocument();
-  expect(headingElement).toHaveStyle({color: convertHexToRGBA('#e1003c') })
-  expect(imgElement).toBeInTheDocument();
-});
+    const logOutSpy = jest.fn();
+    render(<Header user={userTest} logOut={logOutSpy} />);
+    const section = document.querySelector('#logoutSection');
+    expect(section).toBeInTheDocument();
 
-test('logoutSection is not rendered with default context value', () => {
-  const defaultUser = {
-    email: '',
-    password: '',
-    isLoggedIn: false
-  };
+    const logoutLink = screen.getByRole('link', { name: /logout/i });
+    await user.click(logoutLink);
 
-  render(<Header user={defaultUser} logOut={jest.fn()} />);
-
-  const logoutSection = screen.queryByText(/logout/i);
-
-  expect(logoutSection).not.toBeInTheDocument();
-});
-
-test('logoutSection is rendered when user is logged in', () => {
-  const loggedInUser = {
-    email: 'test@test.com',
-    password: 'password123',
-    isLoggedIn: true
-  };
-
-  render(<Header user={loggedInUser} logOut={jest.fn()} />);
-
-  const logoutSection = screen.getByText(/logout/i);
-  expect(logoutSection).toBeInTheDocument();
-  expect(screen.getByText(/test@test.com/i)).toBeInTheDocument();
-});
-
-test('clicking logout link calls the logOut function', () => {
-  const logOutSpy = jest.fn();
-  const loggedInUser = {
-    email: 'test@test.com',
-    password: 'password123',
-    isLoggedIn: true
-  };
-
-  render(<Header user={loggedInUser} logOut={logOutSpy} />);
-
-  const logoutLink = screen.getByText(/logout/i);
-  fireEvent.click(logoutLink);
-
-  expect(logOutSpy).toHaveBeenCalledTimes(1);
+    expect(logOutSpy).toHaveBeenCalledTimes(1);
+  });
 });

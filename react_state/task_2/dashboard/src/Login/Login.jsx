@@ -1,88 +1,74 @@
 import { Component } from 'react';
 import WithLogging from '../HOC/WithLogging';
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Déclaration de la constante emailRegex
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
 
 class Login extends Component {
+
   constructor(props) {
     super(props);
-    const { email = '', password = '' } = props;
     this.state = {
-      email,
-      password,
-      enableSubmit: false,
+      email: this.props.email,
+      password: this.props.password,
+      enableSubmit: false
     };
   }
 
-  handleChangeEmail = (e) => {
-    const email = e.target.value;
-    this.setState({ email }, this.validateForm);
-  };
+  handleLoginSubmit = (event) => {
+    event.preventDefault();
+    this.props.logIn(this.state.email, this.state.password);
+  }
 
-  handleChangePassword = (e) => {
-    const password = e.target.value;
-    this.setState({ password }, this.validateForm);
-  };
+  handleChangeEmail = (event) => {
+    const newEmail = event.target.value;
+    this.setState({
+      email: newEmail,
+      enableSubmit: emailRegex.test(newEmail) && this.state.password.length >= 8
+    });
+  }
 
-  validateForm = () => {
-    const { email, password } = this.state;
-    const isEmailValid = EMAIL_REGEX.test(email);
-    const isPasswordValid = password.length >= 8;
-    this.setState({ enableSubmit: isEmailValid && isPasswordValid });
-  };
-
-  handleLoginSubmit = (e) => {
-    e.preventDefault();
-    const { email, password } = this.state;
-    const { logIn = () => {} } = this.props;
-    logIn(email, password);
-  };
+  handleChangePassword = (event) => {
+    const newPassword = event.target.value;
+    this.setState({
+      password: newPassword,
+      enableSubmit: newPassword.length >= 8 && emailRegex.test(this.state.email)
+    });
+  }
 
   render() {
-    const { email, password, enableSubmit } = this.state;
-
     return (
-      <div className="App-body text-justify flex-1 border-b-2 border-[var(--main-color)]">
+      <div className='App-body flex-1 text-justify border-t border-t-[2.5px] border-t-[var(--main-color)]'>
+        <p className='ml-4 mt-4 mb-4'>Login to access the full dashboard</p>
 
-        <p className="ml-4">Login to access the full dashboard</p>
+        <form className='md:flex md:flex-row md:items-center' onSubmit={this.handleLoginSubmit} >
+          <div className='flex flex-col md:flex-row'>
+            <label className='mt-2 md:mt-0 ml-4' htmlFor="email">Email :</label>
+            <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded'
+              type="email" name="email" id="email" onChange={this.handleChangeEmail} value={this.state.email} />
+          </div>
 
-        <form
-          className="login-form flex items-center ml-2 gap-2 max-[520px]:flex-col max-[520px]:items-start"
-          onSubmit={this.handleLoginSubmit}
-        >
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={email}
-            onChange={this.handleChangeEmail}
-            className="ml-2 border border-gray-400 px-2 py-1 rounded w-[180px] max-[520px]:w-full"
-          />
+          <div className='flex flex-col md:flex-row'>
+            <label className='mt-2 md:mt-0 ml-4' htmlFor="password">Password :</label>
+            <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded'
+              type="password" name="password" id="password" onChange={this.handleChangePassword} value={this.state.password} />
+          </div>
 
-          <label htmlFor="password" className="ml-2 max-[520px]:ml-0">
-            Password
-          </label>
-
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={password}
-            onChange={this.handleChangePassword}
-            className="ml-2 border border-gray-400 px-2 py-1 rounded w-[180px] max-[520px]:w-full"
-          />
-
-          <input
-            type="submit"
-            value="OK"
-            disabled={!enableSubmit}
-            className="ml-4 border border-gray-600 px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 max-[520px]:ml-0 max-[520px]:w-full disabled:opacity-50 disabled:cursor-not-allowed"
-          />
+          <input type='submit' disabled={!this.state.enableSubmit} value={'OK'}
+            className={`mt-2 md:mt-0 ml-4 border border-black px-2 cursor-pointer rounded ${this.state.enableSubmit ? 'opacity-100' : 'opacity-50'}`} />
         </form>
       </div>
-    );
+    )
   }
 }
 
-export default WithLogging(Login);
+Login.defaultProps = {
+  email: '',
+  password: '',
+  logIn: () => {}
+}
+
+
+const LoginWithLogging = WithLogging(Login);
+
+export default LoginWithLogging;

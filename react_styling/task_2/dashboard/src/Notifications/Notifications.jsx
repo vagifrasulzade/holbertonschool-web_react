@@ -5,65 +5,52 @@ import NotificationItem from './NotificationItem';
 class Notifications extends Component {
   handleClick = () => console.log('Close button has been clicked');
 
+  // Méthode markAsRead
   markAsRead = (id) => {
     console.log(`Notification ${id} has been marked as read`);
-  };
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.notifications.length !== nextProps.notifications.length;
+  }
 
   render() {
-    const { notifications = [], displayDrawer = true } = this.props;
-
-    const shouldBounce =
-      notifications.length > 0 && displayDrawer === false;
-
     return (
-      <div>
-        <p
-          className={`notification-title flex justify-end ${
-            shouldBounce ? 'animate-bounce' : ''
-          }`}
-        >
-          Your notifications
-        </p>
-
-        {displayDrawer && (
-          <div className="w-[400px] ml-auto border-2 border-dashed border-[var(--main-color)] p-2">
-            <div className="notification-items relative p-3">
-
-              <p>Here is the list of notifications</p>
-
-              {/* ALWAYS render UL (critical for tests) */}
-              <ul>
-                {notifications.length > 0 ? (
-                  notifications.map((notif) => (
-                    <NotificationItem
-                      key={notif.id}
-                      id={notif.id}
-                      type={notif.type}
-                      value={notif.value}
-                      html={notif.html}
-                      markAsRead={this.markAsRead}
-                    />
-                  ))
-                ) : (
-                  <li>No new notification for now</li>
-                )}
-              </ul>
-
-              {notifications.length > 0 && (
-                <button
-                  aria-label="Close"
-                  className="absolute top-2 right-2 w-6 h-6"
-                  onClick={this.handleClick}
-                >
-                  <img src={CloseButton} alt="close" />
-                </button>
-              )}
-
-            </div>
+      <div className='Notification-Component flex flex-wrap justify-end mr-2.5'>
+        <div className="notification-title text-right w-full">
+          <p>Your notifications</p>
+        </div>
+        {
+          this.props.displayDrawer && <div className="notification-items border-dashed border-[var(--main-color)] border-[2.5px] w-[25vw] p-[6px] flex flex-wrap mb-4">
+            {this.props.notifications.length !== 0 && <p>Here is the list of notifications</p>}
+            {this.props.notifications.length !== 0 && <button aria-label='Close' style={{
+              width: '1.75rem',
+              height: '1rem',
+              marginTop: '0.25rem',
+              marginLeft: 'auto',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            onClick={this.handleClick}>
+              <img className='w-[70%]' src={CloseButton} />
+            </button>}
+            <ul className='w-full list-[square] list-inside pl-1'>
+              {this.props.notifications.length===0 ? 'No new notification for now' :
+                this.props.notifications.map((notification) => (
+                <NotificationItem
+                  key={notification.id}
+                  type={notification.type}
+                  value={notification.value}
+                  html={notification.html}
+                  markAsRead={this.markAsRead}
+                  id={notification.id} />
+              ))}
+            </ul>
           </div>
-        )}
+        }
       </div>
-    );
+    )
   }
 }
 

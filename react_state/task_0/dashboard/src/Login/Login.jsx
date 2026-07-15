@@ -2,40 +2,26 @@ import WithLogging from '../HOC/WithLogging';
 
 function Login() {
   return (
-    <div className="App-body text-justify flex-1 border-b-2 border-[var(--main-color)]">
+    <div className='App-body flex-1 text-justify border-t border-t-[2.5px] border-t-[var(--main-color)]'>
+      <p className='ml-4 mt-4 mb-4'>Login to access the full dashboard</p>
 
-      <p className="ml-4">Login to access the full dashboard</p>
+      <div className='md:flex md:flex-row md:items-center'>
+        <div className='flex flex-col md:flex-row'>
+          <label className='mt-2 md:mt-0 ml-4' htmlFor="email">Email :</label>
+          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded' type="email" name="email" id="email" />
+        </div>
 
-      <div className="login-form flex items-center ml-2 gap-2 max-[520px]:flex-col max-[520px]:items-start">
+        <div className='flex flex-col md:flex-row'>
+          <label className='mt-2 md:mt-0 ml-4' htmlFor="password">Password :</label>
+          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded' type="password" name="password" id="password" />
+        </div>
 
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          className="ml-2 border border-gray-400 px-2 py-1 rounded w-[180px] max-[520px]:w-full"
-        />
-
-        <label htmlFor="password" className="ml-2 max-[520px]:ml-0">
-          Password
-        </label>
-
-        <input
-          type="password"
-          id="password"
-          name="password"
-          className="ml-2 border border-gray-400 px-2 py-1 rounded w-[180px] max-[520px]:w-full"
-        />
-
-        <button
-          type="button"
-          className="ml-4 border border-gray-600 px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 max-[520px]:ml-0 max-[520px]:w-full"
-        >
-          OK
-        </button>
+        <button className='mt-2 md:mt-0 ml-4 border border-black px-2 cursor-pointer rounded'>OK</button>
       </div>
     </div>
-  );
+  )
 }
 
-export default WithLogging(Login);
+const LoginWithLogging = WithLogging(Login);
+
+export default LoginWithLogging;

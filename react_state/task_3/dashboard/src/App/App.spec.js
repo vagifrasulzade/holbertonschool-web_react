@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import App from './App';
 
 describe('App component', () => {
@@ -26,77 +27,119 @@ describe('App component', () => {
     expect(headerImgAlt).toBeInTheDocument();
   });
 
-  test('Vérification des inputs associés aux labels', () => {
+  // Tests Composant Login
+  test('Vérification de la présence du composant Login quand LoggedIn est false (Comportement par défaut)', () => {
     render(<App />);
+    const loginText = screen.getByText(/login to access the full dashboard/i);
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
+    const formButton = screen.getByRole('button', { name: /OK/i });
+    expect(loginText).toBeInTheDocument();
     expect(emailInput).toBeInTheDocument();
     expect(passwordInput).toBeInTheDocument();
-  });
-
-  test('Vérification du texte des labels', () => {
-    render(<App />);
-    const emailLabel = screen.getByLabelText(/email/i);
-    const passwordLabel = screen.getByLabelText(/password/i);
-    expect(emailLabel).toBeInTheDocument();
-    expect(passwordLabel).toBeInTheDocument();
-  });
-
-  test('Vérification du bouton', () => {
-    render(<App />);
-    const formButton = screen.getByRole('button', { name: /OK/i });
     expect(formButton).toBeInTheDocument();
   });
 
-  test('renders Login by default (initial state isLoggedIn false)', () => {
+  // Tests CourseList
+  test('Vérification de la présence du composant CourseList quand isLoggedIn est true', async () => {
     render(<App />);
-    expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
-  });
+    const user = userEvent.setup();
 
-  test('renders CourseList and hides Login after successful login (state updates)', () => {
-    render(<App />);
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
+
+    await user.type(emailInput, 'fallen.albaz@gmail.com');
+    await user.type(passwordInput, 'Azertyuiop');
+
     const formButton = screen.getByRole('button', { name: /OK/i });
+    await user.click(formButton);
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(formButton);
-
-    expect(screen.getByRole('table')).toBeInTheDocument();
-    expect(screen.queryByText(/Login to access the full dashboard/i)).not.toBeInTheDocument();
+    const tableElement = screen.getByRole('table');
+    expect(tableElement).toBeInTheDocument();
   });
 
-  test('logoutSection appears after login and disappears after logout', () => {
+  // Tests logOut
+  test("Vérification de l'appel à la fonction logOut quand 'Ctrl + h' sont pressés", async () => {
+    const logOutAlertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
     render(<App />);
+    // Simumation de la connexion
+    const user = userEvent.setup();
+
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
+
+    await user.type(emailInput, 'fallen.albaz@gmail.com');
+    await user.type(passwordInput, 'Azertyuiop');
+
     const formButton = screen.getByRole('button', { name: /OK/i });
+    await user.click(formButton);
 
-    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-    fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    fireEvent.click(formButton);
+    // Déclenchement du logOut
+    fireEvent.keyDown(document, { key: 'h', ctrlKey: true });
 
-    expect(document.getElementById('logoutSection')).toBeInTheDocument();
+    const loginText = screen.getByText(/login to access the full dashboard/i);
+    expect(loginText).toBeInTheDocument();
 
-    const logoutLink = screen.getByText(/logout/i);
-    fireEvent.click(logoutLink);
-
-    expect(document.getElementById('logoutSection')).not.toBeInTheDocument();
-    expect(screen.getByText(/Login to access the full dashboard/i)).toBeInTheDocument();
+    logOutAlertSpy.mockRestore();
   });
 
-  test('alert is called with "Logging you out" when Ctrl+H is pressed', () => {
-    const alertMock = jest.spyOn(window, 'alert').mockImplementation(() => {});
+  test("Vérification de l'appel window.alert avec 'Logging you out' quand 'Ctrl + h' sont pressés", async () => {
+    const logOutAlertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
     render(<App />);
-    fireEvent.keyDown(window, { key: 'h', ctrlKey: true });
-    expect(alertMock).toHaveBeenCalledWith('Logging you out');
-    alertMock.mockRestore();
+    // Simumation de la connexion
+    const user = userEvent.setup();
+
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+
+    await user.type(emailInput, 'fallen.albaz@gmail.com');
+    await user.type(passwordInput, 'Azertyuiop');
+
+    const formButton = screen.getByRole('button', { name: /OK/i });
+    await user.click(formButton);
+
+    // Déclenchement du logOut
+    fireEvent.keyDown(document, { key: 'h', ctrlKey: true });
+
+    expect(logOutAlertSpy).toHaveBeenCalledWith('Logging you out');
+    logOutAlertSpy.mockRestore();
   });
 
-  test('renders News from the School section with correct content', () => {
+  // Tests BodySection
+  test('Vérification de la présence des éléments du composant BodySection (h2 & paragraph)', () => {
     render(<App />);
-    expect(screen.getByRole('heading', { level: 2, name: /news from the school/i })).toBeInTheDocument();
-    expect(screen.getByText(/holberton school news goes here/i)).toBeInTheDocument();
+    const BodySectionh2 = screen.getByRole('heading', { level: 2, name: /News from the School/i });
+    // const BodySectionp = screen.getByText(/Holberton School News goes here/i);
+    const BodySectionp = screen.getByText(/ipsum Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique, asperiores architecto blanditiis fuga doloribus sit illum aliquid ea distinctio minus accusantium, impedit quo voluptatibus ut magni dicta. Recusandae, quia dicta?/i);
+    expect(BodySectionh2).toBeInTheDocument();
+    expect(BodySectionp).toBeInTheDocument();
+  });
+
+  // Test intégration avec le composant Header (Gestion Logout)
+  test('Vérification de la présence des bons éléments quand on est connecté ou déconnecté', async () => {
+    render(<App />);
+    const user = userEvent.setup();
+
+    // Simulation de la connexion
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/password/i);
+
+    await user.type(emailInput, 'fallen.albaz@gmail.com');
+    await user.type(passwordInput, 'Azertyuiop');
+    const formButton = screen.getByRole('button', { name: /OK/i });
+    await user.click(formButton);
+
+    // Vérification de la présence des bons éléments une fois connecté
+    const section = document.querySelector('#logoutSection');
+    expect(section).toBeInTheDocument();
+
+    // Simulation de la déconnexion
+    const logoutLink = screen.getByRole('link', { name: /logout/i });
+    await user.click(logoutLink);
+
+    // Vérification de la présence des bons éléments une fois déconnecté.
+    expect(section).not.toBeInTheDocument();
+    const loginText = screen.getByText(/login to access the full dashboard/i);
+    expect(loginText).toBeInTheDocument();
   });
 });

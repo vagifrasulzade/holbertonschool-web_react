@@ -1,23 +1,12 @@
 import HbSLogo from '../assets/holberton-logo.jpg';
-import Notifications from '../Notifications/Notifications';
 
-function Header({ notifications, displayDrawer }) {
+function Header() {
   return (
-    <div className="flex items-center justify-between border-b-2 border-(--main-color) p-2">
-      
-      <div className="flex items-center">
-        <img src={HbSLogo} alt="holberton logo" className="w-[200px]" />
-        <h1 className="ml-4 text-(--main-color) font-[Arial,Helvetica,sans-serif]">
-          School dashboard
-        </h1>
-      </div>
-
-      <Notifications
-        notifications={notifications}
-        displayDrawer={displayDrawer}
-      />
+    <div className='App-header flex'>
+      <img className='w-[15%]' src={HbSLogo} alt="holberton logo" />
+      <h1 className='self-center ml-4 text-[var(--main-color)] font-bold text-4xl'>School dashboard</h1>
     </div>
-  );
+  )
 }
 
 export default Header;

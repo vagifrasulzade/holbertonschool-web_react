@@ -2,21 +2,15 @@ import { PureComponent } from 'react';
 
 class NotificationItem extends PureComponent {
   render() {
-    const { type = 'default', value, html, markAsRead, id } = this.props;
-
-    const style = {
-      color: type === 'default' ? 'blue' : 'red',
-    };
-
-    return (
-      <li
-        data-notification-type={type}
-        style={style}
-        onClick={() => markAsRead && markAsRead(id)}
-        dangerouslySetInnerHTML={html ? { __html: html } : undefined}
-      >
-        {!html ? value : null}
-      </li>
+    return(
+      this.props.html ?
+        <li className={ this.props.type === 'default' ? "text-[var(--default-notification-item)]" : "text-[var(--urgent-notification-item)]" }
+          data-notification-type={this.props.type}
+          dangerouslySetInnerHTML={{ __html: this.props.html }}
+          onClick={() => this.props.markAsRead(this.props.id)} />:
+        <li className={ this.props.type === 'default' ? "text-[var(--default-notification-item)]" : "text-[var(--urgent-notification-item)]" }
+          data-notification-type={this.props.type}
+          onClick={() => this.props.markAsRead(this.props.id)}>{ this.props.value }</li>
     );
   }
 }

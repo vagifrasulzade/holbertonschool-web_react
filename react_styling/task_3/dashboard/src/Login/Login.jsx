@@ -2,35 +2,20 @@ import WithLogging from '../HOC/WithLogging';
 
 function Login() {
   return (
-    <div className="App-body text-justify flex-1 border-b-2 border-[var(--main-color)]">
-      <p className="ml-4">Login to access the full dashboard</p>
+    <div className='App-body flex-1 text-justify border-t border-t-[2.5px] border-t-[var(--main-color)]'>
+      <p className='ml-4 mt-4 mb-4'>Login to access the full dashboard</p>
 
-      <div className="login-form flex items-center ml-2 gap-2">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          className="ml-2 border border-gray-400 px-2 py-1 rounded"
-        />
+      <label className='ml-4' htmlFor="email">Email :</label>
+      <input className='ml-4 border border-gray-400 px-1 rounded' type="email" name="email" id="email" />
 
-        <label htmlFor="password" className="ml-2">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          className="ml-2 border border-gray-400 px-2 py-1 rounded"
-        />
+      <label className='ml-4' htmlFor="password">Password :</label>
+      <input className='ml-4 border border-gray-400 px-1 rounded' type="password" name="password" id="password" />
 
-        <button
-          type="button"
-          className="ml-4 border border-gray-600 px-3 py-1 rounded bg-gray-100 hover:bg-gray-200"
-        >
-          OK
-        </button>
-      </div>
+      <button className='ml-4 border border-black px-2 cursor-pointer rounded'>OK</button>
     </div>
-  );
+  )
 }
 
-export default WithLogging(Login);
+const LoginWithLogging = WithLogging(Login);
+
+export default LoginWithLogging;

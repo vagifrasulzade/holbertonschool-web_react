@@ -1,7 +1,7 @@
+/************************** App-body **************************/
 .App-body {
   text-align: justify;
   flex: 1;
-  border-bottom: #e1003c solid 2.5px;
 }
 
 .App-body p {

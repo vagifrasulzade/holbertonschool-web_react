@@ -1,65 +1,62 @@
 import { useState } from 'react';
 import WithLogging from '../HOC/WithLogging';
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Déclaration de la constante emailRegex
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
 
-function Login({ logIn = () => {} }) {
-  const [enableSubmit, setEnableSubmit] = useState(false);
+function Login({ email, password, logIn }) {
+
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [enableSubmit, setEnableSubmit] = useState(false);
 
-  const handleChangeEmail = (e) => {
-    const email = e.target.value;
-    setFormData((prev) => ({ ...prev, email }));
-    setEnableSubmit(EMAIL_REGEX.test(email) && formData.password.length >= 8);
-  };
-
-  const handleChangePassword = (e) => {
-    const password = e.target.value;
-    setFormData((prev) => ({ ...prev, password }));
-    setEnableSubmit(EMAIL_REGEX.test(formData.email) && password.length >= 8);
-  };
-
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
+  const handleLoginSubmit = (event) => {
+    event.preventDefault();
     logIn(formData.email, formData.password);
-  };
+  }
+
+  const handleChangeEmail = (event) => {
+    const newEmail = event.target.value;
+    setFormData({ email: newEmail, password: formData.password });
+    setEnableSubmit(emailRegex.test(newEmail) && formData.password.length >= 8);
+  }
+
+  const handleChangePassword = (event) => {
+    const newPassword = event.target.value;
+    setFormData({ email: formData.email, password: newPassword });
+    setEnableSubmit(newPassword.length >= 8 && emailRegex.test(formData.email));
+  }
 
   return (
-    <div className="App-body text-justify flex-1 border-b-2 border-[var(--main-color)]">
-      <p className="ml-4">Login to access the full dashboard</p>
-      <form
-        className="login-form flex items-center ml-2 gap-2 max-[520px]:flex-col max-[520px]:items-start"
-        onSubmit={handleLoginSubmit}
-      >
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChangeEmail}
-          className="ml-2 border border-gray-400 px-2 py-1 rounded w-[180px] max-[520px]:w-full"
-        />
-        <label htmlFor="password" className="ml-2 max-[520px]:ml-0">
-          Password
-        </label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={formData.password}
-          onChange={handleChangePassword}
-          className="ml-2 border border-gray-400 px-2 py-1 rounded w-[180px] max-[520px]:w-full"
-        />
-        <input
-          type="submit"
-          value="OK"
-          disabled={!enableSubmit}
-          className="ml-4 border border-gray-600 px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 max-[520px]:ml-0 max-[520px]:w-full disabled:opacity-50 disabled:cursor-not-allowed"
-        />
+    <div className='App-body flex-1 text-justify border-t border-t-[2.5px] border-t-[var(--main-color)]'>
+      <p className='ml-4 mt-4 mb-4'>Login to access the full dashboard</p>
+
+      <form className='md:flex md:flex-row md:items-center' onSubmit={handleLoginSubmit} >
+        <div className='flex flex-col md:flex-row'>
+          <label className='mt-2 md:mt-0 ml-4' htmlFor="email">Email :</label>
+          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded'
+            type="email" name="email" id="email" onChange={handleChangeEmail} value={formData.email} />
+        </div>
+
+        <div className='flex flex-col md:flex-row'>
+          <label className='mt-2 md:mt-0 ml-4' htmlFor="password">Password :</label>
+          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded'
+            type="password" name="password" id="password" onChange={handleChangePassword} value={formData.password} />
+        </div>
+
+        <input type='submit' disabled={!enableSubmit} value={'OK'}
+          className={`mt-2 md:mt-0 ml-4 border border-black px-2 cursor-pointer rounded ${enableSubmit ? 'opacity-100' : 'opacity-50'}`} />
       </form>
     </div>
-  );
+  )
 }
 
-export default WithLogging(Login);
+Login.defaultProps = {
+  email: '',
+  password: '',
+  logIn: () => {}
+}
+
+
+const LoginWithLogging = WithLogging(Login);
+
+export default LoginWithLogging;

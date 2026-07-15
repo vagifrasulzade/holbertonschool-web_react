@@ -1,7 +1,20 @@
+.Notification-Component {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.notification-title {
+  width: 100%;
+  text-align: end;
+}
+
 .notification-items {
   border: #e1003c dotted 2.5px;
   display: flex;
   flex-wrap: wrap;
+  width: 60%;
+  margin-bottom: 1rem;
 }
 
 .notification-items p {
@@ -14,12 +27,4 @@
 
 .notification-items ul {
   width: 100%;
-}
-
-li[data-priority='default'] {
-  color: blue;
-}
-
-li[data-priority='urgent'] {
-  color: red;
 }
