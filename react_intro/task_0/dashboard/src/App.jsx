@@ -1,23 +1,25 @@
-import HbSLogo from './assets/holberton-logo.jpg'
-import './App.css'
+import './App.css';
+import holbertonLogo from './assets/holberton-logo.jpg';
 
 function App() {
-  return (
-    <>
-      <div className='App-header'>
-        <img src={HbSLogo} alt="holberton logo" />
-        <h1>School dashboard</h1>
-      </div>
+  const currentYear = new Date().getFullYear();
 
-      <div className='App-body'>
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={holbertonLogo} alt="holberton logo" />
+        <h1>School Dashboard</h1>
+      </header>
+
+      <div className="App-body">
         <p>Login to access the full dashboard</p>
       </div>
 
-      <div className='App-footer'>
-        <p>Copyright {new Date().getFullYear()} - holberton School</p>
+      <div className="App-footer">
+        <p>Copyright {currentYear} - holberton School</p>
       </div>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;

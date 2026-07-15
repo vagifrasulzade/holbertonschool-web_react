@@ -2,33 +2,51 @@ import { render, screen } from '@testing-library/react';
 import CourseListRow from './CourseListRow';
 
 describe('CourseListRow component', () => {
-  test('renders one columnheader with colspan=2 when isHeader=true and textSecondCell=null', () => {
+  test('renders one column header with colspan 2', () => {
     render(
-      <table><tbody>
-        <CourseListRow isHeader={true} textFirstCell="Available courses" />
-      </tbody></table>
+      <table>
+        <tbody>
+          <CourseListRow
+            isHeader
+            textFirstCell="Available courses"
+          />
+        </tbody>
+      </table>
     );
-    const th = screen.getByRole('columnheader');
-    expect(th).toHaveAttribute('colspan', '2');
+
+    const header = screen.getByRole('columnheader');
+
+    expect(header).toHaveAttribute('colspan', '2');
   });
 
-  test('renders two th cells when isHeader=true and textSecondCell is not null', () => {
+  test('renders two header cells', () => {
     render(
-      <table><tbody>
-        <CourseListRow isHeader={true} textFirstCell="Course name" textSecondCell="Credit" />
-      </tbody></table>
+      <table>
+        <tbody>
+          <CourseListRow
+            isHeader
+            textFirstCell="Course name"
+            textSecondCell="Credit"
+          />
+        </tbody>
+      </table>
     );
-    const headers = screen.getAllByRole('columnheader');
-    expect(headers).toHaveLength(2);
+
+    expect(screen.getAllByRole('columnheader')).toHaveLength(2);
   });
 
-  test('renders two td elements within a tr when isHeader=false', () => {
+  test('renders two td elements', () => {
     render(
-      <table><tbody>
-        <CourseListRow textFirstCell="ES6" textSecondCell="60" />
-      </tbody></table>
+      <table>
+        <tbody>
+          <CourseListRow
+            textFirstCell="ES6"
+            textSecondCell="60"
+          />
+        </tbody>
+      </table>
     );
-    const cells = screen.getAllByRole('cell');
-    expect(cells).toHaveLength(2);
+
+    expect(screen.getAllByRole('cell')).toHaveLength(2);
   });
 });

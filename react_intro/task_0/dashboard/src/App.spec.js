@@ -1,28 +1,29 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-describe('App component', () => {
-  test('Vérification texte h1 App-header', () => {
+describe('App Component Tests', () => {
+  // Test 1: Single query to verify both the h1 element and text content
+  test('renders the h1 element with School Dashboard text', () => {
     render(<App />);
-    const headerh1 = screen.getByRole('heading', { level: 1, name: /School dashboard/i });
-    expect(headerh1).toBeInTheDocument();
+    const headingNode = screen.getByRole('heading', { name: /school dashboard/i, level: 1 });
+    expect(headingNode).toBeInTheDocument();
   });
 
-  test('Vérification texte App-body', () => {
+  // Test 2: Checks the specific text within the 2 paragraphs
+  test('renders correct text content in the body and footer paragraphs', () => {
     render(<App />);
-    const bodyp = screen.getByText(/Login to access the full dashboard/i);
-    expect(bodyp).toBeInTheDocument();
+    
+    const bodyNode = screen.getByText(/login to access the full dashboard/i);
+    const footerNode = screen.getByText(/copyright \d{4} - holberton school/i);
+
+    expect(bodyNode).toBeInTheDocument();
+    expect(footerNode).toBeInTheDocument();
   });
 
-  test('Vérification texte App-footer', () => {
+  // Test 3: Match image element by its alt attribute content
+  test('renders the logo image element with correct alt text', () => {
     render(<App />);
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
-  });
-
-  test('Vérification alt image App-header', () => {
-    render(<App />);
-    const headerImgAlt = screen.getByAltText(/holberton logo/i);
-    expect(headerImgAlt).toBeInTheDocument();
+    const logoNode = screen.getByAltText(/holberton logo/i);
+    expect(logoNode).toBeInTheDocument();
   });
 });

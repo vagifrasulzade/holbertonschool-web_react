@@ -1,18 +1,18 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-describe('App component', () => {
-  test('renders email and password inputs', () => {
+describe('App Component Tests', () => {
+  test('renders the email and password input elements', () => {
     render(<App />);
 
-    const inputs = screen.getAllByRole('textbox');
+    const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
 
-    expect(inputs.length).toBe(1); // email is textbox
+    expect(emailInput).toBeInTheDocument();
     expect(passwordInput).toBeInTheDocument();
   });
 
-  test('renders Email and Password labels', () => {
+  test('renders the Email and Password labels', () => {
     render(<App />);
 
     const emailLabel = screen.getByText(/email/i);
@@ -22,10 +22,11 @@ describe('App component', () => {
     expect(passwordLabel).toBeInTheDocument();
   });
 
-  test("renders OK button", () => {
+  test('renders the OK button', () => {
     render(<App />);
 
-    const button = screen.getByRole('button', { name: /ok/i });
+    const button = screen.getByRole('button', { name: /^ok$/i });
+
     expect(button).toBeInTheDocument();
   });
 });

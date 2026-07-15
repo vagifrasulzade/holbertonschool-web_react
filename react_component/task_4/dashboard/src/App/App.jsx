@@ -1,27 +1,20 @@
 import { Component, Fragment } from 'react';
-import Notifications from '../Notifications/Notifications';
+import './App.css';
 import Header from '../Header/Header';
-import Login from '../Login/Login';
 import Footer from '../Footer/Footer';
+import Login from '../Login/Login';
+import Notifications from '../Notifications/Notifications';
 import CourseList from '../CourseList/CourseList';
+import { getLatestNotification } from '../utils/utils';
 import BodySection from '../BodySection/BodySection';
 import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
-import { getLatestNotification } from '../utils/utils';
-import './App.css';
-
-const notificationsList = [
-  { id: 1, type: 'default', value: 'New course available' },
-  { id: 2, type: 'urgent', value: 'New resume available' },
-  { id: 3, type: 'urgent', html: getLatestNotification() },
-];
-
-const coursesList = [
-  { id: 1, name: 'ES6', credit: 60 },
-  { id: 2, name: 'Webpack', credit: 20 },
-  { id: 3, name: 'React', credit: 40 },
-];
 
 class App extends Component {
+  static defaultProps = {
+    isLoggedIn: false,
+    logOut: () => {},
+  };
+
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
   }
@@ -30,36 +23,74 @@ class App extends Component {
     window.removeEventListener('keydown', this.handleKeyDown);
   }
 
-  handleKeyDown = (e) => {
-    if (e.ctrlKey && e.key === 'h') {
-      alert('Logging you out');
-      const { logOut = () => {} } = this.props;
-      logOut();
+  handleKeyDown = (event) => {
+    if (
+      event.ctrlKey
+      && typeof event.key === 'string'
+      && event.key.toLowerCase() === 'h'
+    ) {
+      window.alert('Logging you out');
+      this.props.logOut();
     }
   };
 
   render() {
-    const { isLoggedIn = false } = this.props;
+    const notificationsList = [
+      {
+        id: 1,
+        type: 'default',
+        value: 'New course available',
+      },
+      {
+        id: 2,
+        type: 'urgent',
+        value: 'New resume available',
+      },
+      {
+        id: 3,
+        type: 'urgent',
+        html: {
+          __html: getLatestNotification(),
+        },
+      },
+    ];
+
+    const coursesList = [
+      { id: 1, name: 'ES6', credit: 60 },
+      { id: 2, name: 'Webpack', credit: 20 },
+      { id: 3, name: 'React', credit: 40 },
+    ];
+
+    const { isLoggedIn } = this.props;
 
     return (
       <Fragment>
-        <div className="root-notifications">
-          <Notifications listNotifications={notificationsList} />
+        <div className="App">
+          <div className="root-notifications">
+            <Notifications
+              notifications={notificationsList}
+              displayDrawer
+            />
+          </div>
+
+          <Header />
+
+          {isLoggedIn ? (
+            <BodySectionWithMarginBottom>
+              <CourseList courses={coursesList} />
+            </BodySectionWithMarginBottom>
+          ) : (
+            <BodySectionWithMarginBottom>
+              <Login />
+            </BodySectionWithMarginBottom>
+          )}
+          
+          <BodySection title="News from the School">
+            <p>Holberton School News goes here</p>
+          </BodySection>
+
+          <Footer />
         </div>
-        <Header />
-        {isLoggedIn ? (
-          <BodySectionWithMarginBottom title="Course list">
-            <CourseList courses={coursesList} />
-          </BodySectionWithMarginBottom>
-        ) : (
-          <BodySectionWithMarginBottom title="Log in to continue">
-            <Login />
-          </BodySectionWithMarginBottom>
-        )}
-        <BodySection title="News from the School">
-          <p>Holberton School News goes here</p>
-        </BodySection>
-        <Footer />
       </Fragment>
     );
   }

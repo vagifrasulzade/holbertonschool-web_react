@@ -1,38 +1,46 @@
-import HbSLogo from '../assets/holberton-logo.jpg';
-import { getCurrentYear, getFooterCopy } from '../utils/utils';
 import './App.css';
-import Notifications from '../Notifications/Notifications.jsx';
+import holbertonLogo from '../assets/holberton-logo.jpg';
+import Notifications from '../Notifications/Notifications';
+import { getCurrentYear, getFooterCopy } from '../utils/utils';
 
 function App() {
-  const currentYear = getCurrentYear();
-  const footerText = getFooterCopy(true);
   return (
-    <>
+    <div className="App">
       <div className="root-notifications">
-        <Notifications/>
-      </div>
-      <div className='App-header'>
-        <img src={HbSLogo} alt="holberton logo" />
-        <h1>School dashboard</h1>
+        <Notifications />
       </div>
 
-      <div className='App-body'>
+      <header className="App-header">
+        <img src={holbertonLogo} alt="holberton logo" />
+        <h1>School Dashboard</h1>
+      </header>
+
+      <div className="App-body">
         <p>Login to access the full dashboard</p>
+          <label htmlFor="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+          />
 
-        <label htmlFor="email">Email :</label>
-        <input type="email" name="email" id="email" />
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+          />
 
-        <label htmlFor="password">Password :</label>
-        <input type="password" name="password" id="password" />
-
-        <button>OK</button>
+          <button type="button">OK</button>
       </div>
 
-      <div className='App-footer'>
-        <p>Copyright {currentYear} - {footerText}</p>
+      <div className="App-footer">
+        <p>
+          Copyright {getCurrentYear()} - {getFooterCopy(false)}
+        </p>
       </div>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;

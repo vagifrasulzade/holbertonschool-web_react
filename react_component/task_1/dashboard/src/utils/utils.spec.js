@@ -1,23 +1,33 @@
-import { getCurrentYear, getFooterCopy, getLatestNotification } from './utils';
+import {
+  getCurrentYear,
+  getFooterCopy,
+  getLatestNotification,
+} from './utils';
 
-describe('getCurrentYear', () => {
-  it('Should return the correct current year', () => {
-    expect(getCurrentYear()).toBe(new Date().getFullYear());
+describe('utils.js', () => {
+  describe('getCurrentYear', () => {
+    test('returns the current year', () => {
+      expect(getCurrentYear()).toBe(new Date().getFullYear());
+    });
   });
-});
 
-describe('getFooterCopy', () => {
-  it('Should return the correct string when argument is true', () => {
-    expect(getFooterCopy(true)).toEqual('Holberton School');
+  describe('getFooterCopy', () => {
+    test('returns the correct string when isIndex is true', () => {
+      expect(getFooterCopy(true)).toBe('Holberton School');
+    });
+
+    test('returns the correct string when isIndex is false', () => {
+      expect(getFooterCopy(false)).toBe(
+        'Holberton School main dashboard'
+      );
+    });
   });
 
-  it('Should return the correct string when argument is false', () => {
-    expect(getFooterCopy(false)).toEqual('Holberton School main dashboard');
-  });
-});
-
-describe('getLatestNotification', () => {
-  it('Should return the correct notification string', () => {
-    expect(getLatestNotification()).toEqual('<strong>Urgent requirement</strong> - complete by EOD');
+  describe('getLatestNotification', () => {
+    test('returns the correct notification string', () => {
+      expect(getLatestNotification()).toBe(
+        '<strong>Urgent requirement</strong> - complete by EOD'
+      );
+    });
   });
 });

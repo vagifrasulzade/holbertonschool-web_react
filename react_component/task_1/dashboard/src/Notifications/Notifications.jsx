@@ -1,69 +1,66 @@
-import { Component } from 'react';
-import CloseButton from '../assets/close-button.png';
-import NotificationItem from './NotificationItem';
 import './Notifications.css';
+import closeButton from '../assets/close-button.png';
+import NotificationItem from './NotificationItem';
 
-class Notifications extends Component {
-  static defaultProps = {
-    displayDrawer: true,
-    notifications: [],
-    listNotifications: [],
+function Notifications({
+  notifications = [],
+  displayDrawer = false,
+}) {
+  const handleClick = () => {
+    console.log('Close button has been clicked');
   };
 
-  handleClick = () => console.log('Close button has been clicked');
-
-  markAsRead = (id) => {
-    console.log(`Notification ${id} has been marked as read`);
-  };
-
-  render() {
-    const { listNotifications, notifications, displayDrawer } = this.props;
-    const items = listNotifications.length > 0 ? listNotifications : notifications;
-
-    return (
-      <div>
-        <div className="notification-title">
-          <p>Your notifications</p>
-        </div>
-        {displayDrawer && (
-          <div className="notification-items">
-            <p>Here is the list of notifications</p>
-            <button
-              aria-label="Close"
-              style={{
-                width: '1.75rem',
-                height: '1rem',
-                marginTop: '0.25rem',
-                marginLeft: 'auto',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-              onClick={this.handleClick}
-            >
-              <img src={CloseButton} alt="close" />
-            </button>
-            <ul>
-              {items.length === 0 ? (
-                <li>No new notification for now</li>
-              ) : (
-                items.map((notif) => (
-                  <NotificationItem
-                    key={notif.id}
-                    id={notif.id}
-                    type={notif.type}
-                    value={notif.value}
-                    html={notif.html}
-                    markAsRead={this.markAsRead}
-                  />
-                ))
-              )}
-            </ul>
-          </div>
-        )}
+  return (
+    <>
+      <div className="notification-title">
+        Your notifications
       </div>
-    );
-  }
+
+      {displayDrawer && (
+        <div className="notification-items">
+          {notifications.length > 0 ? (
+            <>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={handleClick}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '10px',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                <img
+                  src={closeButton}
+                  alt="Close"
+                  width="10"
+                  height="10"
+                />
+              </button>
+
+              <p>Here is the list of notifications</p>
+
+              <ul>
+                {notifications.map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    type={notification.type}
+                    value={notification.value}
+                    html={notification.html}
+                  />
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p>No new notification for now</p>
+          )}
+        </div>
+      )}
+    </>
+  );
 }
 
 export default Notifications;

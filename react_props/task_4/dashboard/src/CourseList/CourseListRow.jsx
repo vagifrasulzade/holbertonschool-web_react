@@ -1,12 +1,17 @@
-function CourseListRow({ isHeader = false, textFirstCell = '', textSecondCell = null }) {
+function CourseListRow({
+  isHeader = false,
+  textFirstCell = '',
+  textSecondCell = null,
+}) {
+  if (isHeader && textSecondCell === null) {
+    return (
+      <tr>
+        <th colSpan="2">{textFirstCell}</th>
+      </tr>
+    );
+  }
+
   if (isHeader) {
-    if (textSecondCell === null) {
-      return (
-        <tr>
-          <th colSpan={2}>{textFirstCell}</th>
-        </tr>
-      );
-    }
     return (
       <tr>
         <th>{textFirstCell}</th>
@@ -14,6 +19,7 @@ function CourseListRow({ isHeader = false, textFirstCell = '', textSecondCell = 
       </tr>
     );
   }
+
   return (
     <tr>
       <td>{textFirstCell}</td>

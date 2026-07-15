@@ -1,43 +1,74 @@
 import React from 'react';
-import { render, cleanup } from '@testing-library/react';
+import {
+  cleanup,
+  render,
+  screen,
+} from '@testing-library/react';
 import WithLogging from './WithLogging';
 
 class MockApp extends React.Component {
   render() {
     return (
-      <h1>Hello from Mock App Component</h1>
+      <h1>
+        Hello from Mock App Component
+      </h1>
     );
   }
 }
 
-const MockAppWithLogging = WithLogging(MockApp);
-
 describe('WithLogging HOC', () => {
   afterEach(() => {
     cleanup();
+    jest.restoreAllMocks();
   });
 
-  test('renders the wrapped component correctly', () => {
-    const { getByRole } = render(<MockAppWithLogging />);
-    expect(getByRole('heading', { level: 1, name: /Hello from Mock App Component/i })).toBeInTheDocument();
+  test('renders the wrapped component', () => {
+    const WrappedComponent = WithLogging(MockApp);
+
+    render(<WrappedComponent />);
+
+    const heading = screen.getByRole('heading', {
+      name: /hello from mock app component/i,
+    });
+
+    expect(heading).toBeInTheDocument();
   });
 
-  test('logs mounted message on componentDidMount', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    render(<MockAppWithLogging />);
-    expect(consoleSpy).toHaveBeenCalledWith('Component MockApp is mounted');
-    consoleSpy.mockRestore();
+  test('logs when the wrapped component mounts', () => {
+    const logSpy = jest
+      .spyOn(console, 'log')
+      .mockImplementation(() => {});
+
+    const WrappedComponent = WithLogging(MockApp);
+
+    render(<WrappedComponent />);
+
+    expect(logSpy).toHaveBeenCalledWith(
+      'Component MockApp is mounted'
+    );
   });
 
-  test('logs unmount message on componentWillUnmount', () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const { unmount } = render(<MockAppWithLogging />);
+  test('logs when the wrapped component unmounts', () => {
+    const logSpy = jest
+      .spyOn(console, 'log')
+      .mockImplementation(() => {});
+
+    const WrappedComponent = WithLogging(MockApp);
+
+    const { unmount } = render(<WrappedComponent />);
+
     unmount();
-    expect(consoleSpy).toHaveBeenCalledWith('Component MockApp is going to unmount');
-    consoleSpy.mockRestore();
+
+    expect(logSpy).toHaveBeenCalledWith(
+      'Component MockApp is going to unmount'
+    );
   });
 
-  test('displayName is set correctly', () => {
-    expect(MockAppWithLogging.displayName).toBe('WithLogging(MockApp)');
+  test('sets the correct display name', () => {
+    const WrappedComponent = WithLogging(MockApp);
+
+    expect(WrappedComponent.displayName).toBe(
+      'WithLogging(MockApp)'
+    );
   });
 });

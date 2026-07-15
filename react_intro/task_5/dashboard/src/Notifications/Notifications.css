@@ -1,25 +1,32 @@
 .notification-items {
-  border: #e1003c dotted 2.5px;
-  display: flex;
-  flex-wrap: wrap;
+  position: relative;
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #e1003c;
+  font-size: 5px;
 }
 
 .notification-items p {
-  margin-left : 1rem;
-}
-
-.notification-items button img {
-  width: 70%;
+  margin: 0 0 10px;
 }
 
 .notification-items ul {
-  width: 100%;
+  margin: 0;
+  padding-left: 15px;
 }
 
-li[data-priority='default'] {
+.notification-items li {
+  margin: 4px 0;
+}
+
+.notification-items li[data-priority='default'] {
   color: blue;
 }
 
-li[data-priority='urgent'] {
+.notification-items li[data-priority='urgent'] {
   color: red;
+}
+
+.notification-items button img {
+  display: block;
 }

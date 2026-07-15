@@ -8,15 +8,18 @@ const courses = [
 ];
 
 describe('CourseList component', () => {
-  test('renders 5 rows when courses array is provided', () => {
+  test('renders 5 rows when courses are provided', () => {
     render(<CourseList courses={courses} />);
-    const rows = screen.getAllByRole('row');
-    expect(rows).toHaveLength(5);
+
+    expect(screen.getAllByRole('row')).toHaveLength(5);
   });
 
-  test('renders 1 row when courses array is empty', () => {
+  test('renders 1 row when courses is empty', () => {
     render(<CourseList courses={[]} />);
-    const rows = screen.getAllByRole('row');
-    expect(rows).toHaveLength(3);
+
+    expect(screen.getAllByRole('row')).toHaveLength(1);
+    expect(
+      screen.getByText(/no course available yet/i)
+    ).toBeInTheDocument();
   });
 });

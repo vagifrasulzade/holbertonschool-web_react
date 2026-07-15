@@ -1,5 +1,11 @@
 .notification-items {
-  border: 2px dashed red;
-  padding: 10px;
-  width: 300px;
+  width: 100%;
+  min-height: 15px;
+  padding: 8px;
+  border: 1px dashed #e1003c;
+  font-size: 5px;
+}
+
+.notification-items p {
+  margin: 0;
 }
