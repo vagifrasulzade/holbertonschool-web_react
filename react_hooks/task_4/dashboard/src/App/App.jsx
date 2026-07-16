@@ -30,13 +30,13 @@ function App() {
         const baseUrl = import.meta.env.BASE_URL || '/';
         const response = await axios.get(`${baseUrl}notifications.json`);
 
-        const data = Array.isArray(response.data) ? response.data : response;
-        const transformedResponse = data.map((element, index, array) => {
+        const rawData = Array.isArray(response.data) ? response.data :
+          (response.data && Array.isArray(response.data.notifications)) ? response.data.notifications : [];
+        const transformedResponse = rawData.map((element, index, array) => {
           if (index === array.length - 1) {
             return { ...element, html: getLatestNotification() };
-          } else {
-            return element;
           }
+          return element;
         })
         setNotifications(transformedResponse);
       }
@@ -53,8 +53,9 @@ function App() {
         const baseUrl = import.meta.env.BASE_URL || '/';
         const response = await axios.get(`${baseUrl}courses.json`);
 
-        const data = Array.isArray(response.data) ? response.data : response;
-        setCourses(data);
+        const coursesData = Array.isArray(response.data) ? response.data :
+          (response.data && Array.isArray(response.data.courses)) ? response.data.courses : [];
+        setCourses(coursesData);
       }
       catch (error) {
         console.error(error);
