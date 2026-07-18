@@ -2,26 +2,140 @@ import WithLogging from '../HOC/WithLogging';
 
 function Login() {
   return (
-    <div className='App-body flex-1 text-justify border-t border-t-[2.5px] border-t-[var(--main-color)]'>
-      <p className='ml-4 mt-4 mb-4'>Login to access the full dashboard</p>
+    <div
+      className="
+        App-body
+        flex-1
+        border-t-2
+        border-main
+        px-[10px]
+        py-[10px]
+        text-[10px]
+        min-[912px]:text-[8px]
+      "
+    >
+      <p
+        className="
+          mb-4
+          text-[10px]
+          min-[520px]:mb-3
+          min-[912px]:mb-2
+          min-[912px]:text-[8px]
+        "
+      >
+        Login to access the full dashboard
+      </p>
 
-      <div className='md:flex md:flex-row md:items-center'>
-        <div className='flex flex-col md:flex-row'>
-          <label className='mt-2 md:mt-0 ml-4' htmlFor="email">Email :</label>
-          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded' type="email" name="email" id="email" />
-        </div>
+      <form
+        className="
+          flex
+          w-full
+          flex-col
+          items-start
+          gap-3
 
-        <div className='flex flex-col md:flex-row'>
-          <label className='mt-2 md:mt-0 ml-4' htmlFor="password">Password :</label>
-          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded' type="password" name="password" id="password" />
-        </div>
+          min-[520px]:flex-row
+          min-[520px]:flex-wrap
+          min-[520px]:items-center
+          min-[520px]:gap-2
+        "
+      >
+        <label
+          htmlFor="email"
+          className="
+            flex
+            w-full
+            flex-col
+            gap-1
 
-        <button className='mt-2 md:mt-0 ml-4 border border-black px-2 cursor-pointer rounded'>OK</button>
-      </div>
+            min-[520px]:w-auto
+            min-[520px]:flex-row
+            min-[520px]:items-center
+          "
+        >
+          Email:
+
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className="
+              h-7
+              w-40
+              rounded
+              border
+              border-gray-400
+              px-2
+              text-[10px]
+
+              min-[520px]:ml-1
+              min-[912px]:h-4
+              min-[912px]:w-28
+              min-[912px]:text-[8px]
+            "
+          />
+        </label>
+
+        <label
+          htmlFor="password"
+          className="
+            flex
+            w-full
+            flex-col
+            gap-1
+
+            min-[520px]:w-auto
+            min-[520px]:flex-row
+            min-[520px]:items-center
+          "
+        >
+          Password:
+
+          <input
+            type="password"
+            id="password"
+            name="password"
+            className="
+              h-7
+              w-40
+              rounded
+              border
+              border-gray-400
+              px-2
+              text-[10px]
+
+              min-[520px]:ml-1
+              min-[912px]:h-4
+              min-[912px]:w-28
+              min-[912px]:text-[8px]
+            "
+          />
+        </label>
+
+        <button
+          type="submit"
+          className="
+            flex
+            h-7
+            w-auto
+            items-center
+            justify-center
+            rounded
+            border
+            border-gray-400
+            px-3
+            text-[10px]
+
+            min-[912px]:h-4
+            min-[912px]:px-2
+            min-[912px]:text-[8px]
+          "
+        >
+          OK
+        </button>
+      </form>
     </div>
-  )
+  );
 }
 
-const LoginWithLogging = WithLogging(Login);
-
-export default LoginWithLogging;
+export default WithLogging(Login);

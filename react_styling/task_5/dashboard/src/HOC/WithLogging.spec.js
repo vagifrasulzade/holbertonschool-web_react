@@ -1,27 +1,74 @@
 import React from 'react';
+import {
+  cleanup,
+  render,
+  screen,
+} from '@testing-library/react';
 import WithLogging from './WithLogging';
-import { render, screen, cleanup } from '@testing-library/react';
 
 class MockApp extends React.Component {
-  render () {
+  render() {
     return (
       <h1>
         Hello from Mock App Component
       </h1>
-    )
+    );
   }
 }
 
-const MockAppWrapped = WithLogging(MockApp);
-
-describe('WithLogging component', () => {
-  afterEach( () => {
+describe('WithLogging HOC', () => {
+  afterEach(() => {
     cleanup();
-  })
+    jest.restoreAllMocks();
+  });
 
-  test("Vérification que le HOC renvoie un élément h1 avec le texte : 'Hello from Mock App Component'.", () => {
-    render(<MockAppWrapped />);
-    const MockAppHeading = screen.getByRole('heading', { level: 1, name: /Hello from Mock App Component/i });
-    expect(MockAppHeading).toBeInTheDocument();
+  test('renders the wrapped component', () => {
+    const WrappedComponent = WithLogging(MockApp);
+
+    render(<WrappedComponent />);
+
+    const heading = screen.getByRole('heading', {
+      name: /hello from mock app component/i,
+    });
+
+    expect(heading).toBeInTheDocument();
+  });
+
+  test('logs when the wrapped component mounts', () => {
+    const logSpy = jest
+      .spyOn(console, 'log')
+      .mockImplementation(() => {});
+
+    const WrappedComponent = WithLogging(MockApp);
+
+    render(<WrappedComponent />);
+
+    expect(logSpy).toHaveBeenCalledWith(
+      'Component MockApp is mounted'
+    );
+  });
+
+  test('logs when the wrapped component unmounts', () => {
+    const logSpy = jest
+      .spyOn(console, 'log')
+      .mockImplementation(() => {});
+
+    const WrappedComponent = WithLogging(MockApp);
+
+    const { unmount } = render(<WrappedComponent />);
+
+    unmount();
+
+    expect(logSpy).toHaveBeenCalledWith(
+      'Component MockApp is going to unmount'
+    );
+  });
+
+  test('sets the correct display name', () => {
+    const WrappedComponent = WithLogging(MockApp);
+
+    expect(WrappedComponent.displayName).toBe(
+      'WithLogging(MockApp)'
+    );
   });
 });

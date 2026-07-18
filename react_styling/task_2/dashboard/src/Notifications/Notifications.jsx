@@ -1,62 +1,95 @@
 import { Component } from 'react';
-import CloseButton from '../assets/close-button.png';
+import closeButton from '../assets/close-button.png';
 import NotificationItem from './NotificationItem';
 
 class Notifications extends Component {
-  handleClick = () => console.log('Close button has been clicked');
+  static defaultProps = {
+    notifications: [],
+    displayDrawer: false,
+  };
 
-  // Méthode markAsRead
+  handleClick = () => {
+    console.log('Close button has been clicked');
+  };
+
   markAsRead = (id) => {
     console.log(`Notification ${id} has been marked as read`);
-  }
+  };
 
   shouldComponentUpdate(nextProps) {
-    return this.props.notifications.length !== nextProps.notifications.length;
+    return nextProps.notifications.length !== this.props.notifications.length;
   }
 
   render() {
+    const { notifications, displayDrawer } = this.props;
+
     return (
-      <div className='Notification-Component flex flex-wrap justify-end mr-2.5'>
-        <div className="notification-title text-right w-full">
-          <p>Your notifications</p>
+      <>
+        <div className="notification-title absolute right-4 top-2">
+          Your Notifications
         </div>
-        {
-          this.props.displayDrawer && <div className="notification-items border-dashed border-[var(--main-color)] border-[2.5px] w-[25vw] p-[6px] flex flex-wrap mb-4">
-            {this.props.notifications.length !== 0 && <p>Here is the list of notifications</p>}
-            {this.props.notifications.length !== 0 && <button aria-label='Close' style={{
-              width: '1.75rem',
-              height: '1rem',
-              marginTop: '0.25rem',
-              marginLeft: 'auto',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer'
-            }}
-            onClick={this.handleClick}>
-              <img className='w-[70%]' src={CloseButton} />
-            </button>}
-            <ul className='w-full list-[square] list-inside pl-1'>
-              {this.props.notifications.length===0 ? 'No new notification for now' :
-                this.props.notifications.map((notification) => (
-                <NotificationItem
-                  key={notification.id}
-                  type={notification.type}
-                  value={notification.value}
-                  html={notification.html}
-                  markAsRead={this.markAsRead}
-                  id={notification.id} />
-              ))}
-            </ul>
+
+        {displayDrawer && (
+          <div
+            className="
+              notification-items
+              absolute
+              right-4
+              top-10
+              w-1/4
+              border
+              border-dashed
+              border-main
+              p-1.5
+            "
+          >
+            {notifications.length > 0 && (
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={this.handleClick}
+                className="
+                  absolute
+                  right-2.5
+                  top-2.5
+                  cursor-pointer
+                  border-none
+                  bg-transparent
+                "
+              >
+                <img
+                  src={closeButton}
+                  alt="Close"
+                  className="h-2.5 w-2.5"
+                />
+              </button>
+            )}
+
+            {notifications.length === 0 ? (
+              <p>No new notification for now</p>
+            ) : (
+              <>
+                <p>Here is the list of notifications</p>
+
+                <ul>
+                  {notifications.map((notification) => (
+                    <NotificationItem
+                      key={notification.id}
+                      id={notification.id}
+                      type={notification.type}
+                      value={notification.value}
+                      html={notification.html}
+                      markAsRead={this.markAsRead}
+                    />
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
-        }
-      </div>
-    )
+        )}
+      </>
+    );
   }
 }
-
-Notifications.defaultProps = {
-  notifications: [],
-  displayDrawer: true,
-};
 
 export default Notifications;

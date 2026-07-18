@@ -1,25 +1,58 @@
+import { fireEvent, render, screen } from '@testing-library/react';
 import NotificationItem from './NotificationItem';
-import { render, screen, fireEvent } from '@testing-library/react';
 
 describe('NotificationItem component', () => {
-  test("Vérification que le texte en data-notification-type: default soit bleu", () => {
-    render(<NotificationItem type="default" value="New course available"/>);
-    const liElement = screen.getByRole('listitem');
-    expect(liElement).toHaveAttribute('data-notification-type', 'default');
+  test('renders a default notification', () => {
+    render(
+      <NotificationItem
+        id={1}
+        type="default"
+        value="New course available"
+      />
+    );
+
+    const item = screen.getByText(/new course available/i);
+
+    expect(item).toHaveAttribute(
+      'data-notification-type',
+      'default'
+    );
   });
 
-  test("Vérification que le texte en data-notification-type: urgent soit rouge", () => {
-    render(<NotificationItem type="urgent" value="New resume available"/>);
-    const liElement = screen.getByRole('listitem');
-    expect(liElement).toHaveAttribute('data-notification-type', 'urgent');
+  test('renders an urgent notification', () => {
+    render(
+      <NotificationItem
+        id={2}
+        type="urgent"
+        value="New resume available"
+      />
+    );
+
+    const item = screen.getByText(/new resume available/i);
+
+    expect(item).toHaveAttribute(
+      'data-notification-type',
+      'urgent'
+    );
   });
 
-  test("Vérification que markAsRead est appelé lors d'un clic sur une notification", () => {
-    const markAsReadSpy = jest.fn();
-    render(<NotificationItem type="urgent" value="New resume available" markAsRead={markAsReadSpy}/>);
+  test('calls markAsRead with the notification id when clicked', () => {
+    const markAsRead = jest.fn();
 
-    const notificationText = screen.getByText(/New resume available/i);
-    fireEvent.click(notificationText);
-    expect(markAsReadSpy).toHaveBeenCalledTimes(1);
+    render(
+      <NotificationItem
+        id={3}
+        type="urgent"
+        value="Urgent notification"
+        markAsRead={markAsRead}
+      />
+    );
+
+    fireEvent.click(
+      screen.getByText(/urgent notification/i)
+    );
+
+    expect(markAsRead).toHaveBeenCalledTimes(1);
+    expect(markAsRead).toHaveBeenCalledWith(3);
   });
 });

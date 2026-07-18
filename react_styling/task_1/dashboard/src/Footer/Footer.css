@@ -1,6 +1,7 @@
-/************************* App-footer *************************/
 .App-footer {
+  border-top: 2px solid #e1003c;
   text-align: center;
+  padding-top: 5px;
+  font-size: 5px;
   font-style: italic;
-  border-top: #e1003c solid 2.5px;
 }

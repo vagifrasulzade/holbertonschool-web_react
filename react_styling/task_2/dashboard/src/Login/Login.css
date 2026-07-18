@@ -1,20 +1,26 @@
-/************************** App-body **************************/
 .App-body {
-  text-align: justify;
   flex: 1;
+  padding: 10px 10px;
+  font-size: 5px;
 }
 
-.App-body p {
-  margin-left: 1rem;
+
+.App-body label {
+  margin-right: 3px;
 }
 
-label[for='email'],
-label[for='password'],
-.App-body #email,
-.App-body #password {
-  margin-left: 0.5rem;
+.App-body input {
+  width: 50px;
+  height: 10px;
+  font-size: 10px;
+  margin-right: 3px;
 }
 
 .App-body button {
-  margin-left: 1rem;
+  height: 10px;
+  width: 2px;
+  font-size: 5px;
+  display: inline-flex;
+  justify-content: center;
+  background-image: rgb(73, 73, 73);
 }

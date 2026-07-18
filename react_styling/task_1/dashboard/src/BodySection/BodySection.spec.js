@@ -1,24 +1,35 @@
-import BodySection from "./BodySection";
 import { render, screen } from '@testing-library/react';
+import BodySection from './BodySection';
 
 describe('BodySection component', () => {
-  test("Vérification le composant BodySelection génère le bon h2 avec le title en props", () => {
-    render(<BodySection title={'Fallen of Albaz'}/>);
-    const titleh2 = screen.getByRole('heading', { level: 2, name: /Fallen of Albaz/i });
-    expect(titleh2).toBeInTheDocument();
-  });
-
-  test("Vérification le composant BodySelection génère le bon nombre de children passés en props", () => {
+  test('renders a heading with the title prop', () => {
     render(
-      <BodySection title={'Fallen of Albaz'}>
-        <p>Dragon</p>
-        <p>Branded</p>
+      <BodySection title="Test title">
+        <p>Test child</p>
       </BodySection>
     );
-    const firstChildren = screen.getByText(/Dragon/i);
-    const secondChildren = screen.getByText(/Branded/i);
 
-    expect(firstChildren).toBeInTheDocument();
-    expect(secondChildren).toBeInTheDocument();
+    const heading = screen.getByRole('heading', {
+      level: 2,
+      name: /test title/i,
+    });
+
+    expect(heading).toBeInTheDocument();
+  });
+
+  test('renders all children passed to it', () => {
+    render(
+      <BodySection title="Test section">
+        <p>First child</p>
+        <p>Second child</p>
+        <button type="button">Third child</button>
+      </BodySection>
+    );
+
+    expect(screen.getByText(/first child/i)).toBeInTheDocument();
+    expect(screen.getByText(/second child/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /third child/i })
+    ).toBeInTheDocument();
   });
 });
