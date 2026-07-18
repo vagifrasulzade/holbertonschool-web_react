@@ -15,24 +15,24 @@ class App extends Component {
     logOut: () => {},
   };
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
   handleKeyDown = (event) => {
     if (
-      event.ctrlKey
-      && typeof event.key === 'string'
-      && event.key.toLowerCase() === 'h'
+      'key' in event
+      && event.ctrlKey
+      && event.key === 'h'
     ) {
       window.alert('Logging you out');
       this.props.logOut();
     }
   };
+
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
 
   render() {
     const notificationsList = [
@@ -76,19 +76,18 @@ class App extends Component {
           <Header />
 
           {isLoggedIn ? (
-            <BodySectionWithMarginBottom>
+            <BodySectionWithMarginBottom title="Course list">
               <CourseList courses={coursesList} />
             </BodySectionWithMarginBottom>
           ) : (
-            <BodySectionWithMarginBottom>
+            <BodySectionWithMarginBottom title="Log in to continue">
               <Login />
             </BodySectionWithMarginBottom>
           )}
-          
-          <BodySection title="News from the School">
-            <p>Holberton School News goes here</p>
-          </BodySection>
 
+          <BodySection title="News from the School">
+            <p>Holberton School news goes here</p>
+          </BodySection>
           <Footer />
         </div>
       </Fragment>
