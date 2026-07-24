@@ -1,44 +1,77 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../../features/auth/authSlice';
 import Footer from './Footer';
+import authReducer from '../../features/auth/authSlice';
+import { getCurrentYear, getFooterCopy } from '../../utils/utils';
 
-function renderFooter(isLoggedIn = false) {
-  const store = configureStore({
+const createMockStore = (initialState) => {
+  return configureStore({
     reducer: {
       auth: authReducer
     },
-    preloadedState: {
-      auth: { isLoggedIn, user: { email: '', password: '' } },
+    preloadedState: initialState
+  });
+};
+
+const renderWithRedux = (component, initialState) => {
+  const store = createMockStore(initialState);
+  return render(
+    <Provider store={store}>
+      {component}
+    </Provider>
+  );
+};
+
+test('It should render footer with copyright text', () => {
+  const initialState = {
+    auth: {
+      user: {
+        email: '',
+        password: ''
+      },
+      isLoggedIn: false
     }
-  });
-  render(<Provider store={store}><Footer /></Provider>);
-  return store;
-}
+  };
 
-describe('Footer component', () => {
-  test("Vérification que le texte de Copyright s'affiche.", () => {
-    renderFooter();
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
-  });
+  renderWithRedux(<Footer />, initialState);
 
-  test("Vérification que le texte de Copyright s'affiche, mais pas le link quand isLoggedIn est false.", () => {
-    renderFooter();
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
+  const footerParagraph = screen.getByText(/copyright/i);
 
-    const footerLink = screen.queryByRole('link', { name: /Contact us/i });
-    expect(footerLink).not.toBeInTheDocument();
-  });
+  expect(footerParagraph).toHaveTextContent(new RegExp(`copyright ${(new Date()).getFullYear()}`, 'i'))
+  expect(footerParagraph).toHaveTextContent(/holberton school/i)
+});
 
-  test("Vérification que le texte de Copyright et le link s'affichent quand isLoggedIn est true.", () => {
-    renderFooter(true);
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
+test('Contact us link is not displayed when user is logged out', () => {
+  const initialState = {
+    auth: {
+      user: {
+        email: '',
+        password: ''
+      },
+      isLoggedIn: false
+    }
+  };
 
-    const footerLink = screen.queryByRole('link', { name: /Contact us/i });
-    expect(footerLink).toBeInTheDocument();
-  });
+  renderWithRedux(<Footer />, initialState);
+
+  const contactLink = screen.queryByText(/contact us/i);
+  expect(contactLink).not.toBeInTheDocument();
+});
+
+test('Contact us link is displayed when user is logged in', () => {
+  const initialState = {
+    auth: {
+      user: {
+        email: 'test@test.com',
+        password: 'password123'
+      },
+      isLoggedIn: true
+    }
+  };
+
+  renderWithRedux(<Footer />, initialState);
+
+  const contactLink = screen.getByText(/contact us/i);
+  expect(contactLink).toBeInTheDocument();
 });

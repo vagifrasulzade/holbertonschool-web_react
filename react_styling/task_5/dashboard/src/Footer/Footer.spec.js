@@ -1,20 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import Footer from './Footer';
+import { getCurrentYear, getFooterCopy } from '../utils/utils';
 
-describe('Footer component tests', () => {
-  test('renders Footer without crashing', () => {
-    render(<Footer />);
-  });
+test('It should render footer with copyright text', () => {
+  render(<Footer />)
 
-  test('renders the correct copyright text', () => {
-    render(<Footer />);
+  const footerParagraph = screen.getByText(/copyright/i);
 
-    const currentYear = new Date().getFullYear();
-
-    expect(
-      screen.getByText(
-        new RegExp(`Copyright ${currentYear} - Holberton School`, 'i')
-      )
-    ).toBeInTheDocument();
-  });
+  expect(footerParagraph).toHaveTextContent(new RegExp(`copyright ${(new Date()).getFullYear()}`, 'i'))
+  expect(footerParagraph).toHaveTextContent(/holberton school/i)
 });

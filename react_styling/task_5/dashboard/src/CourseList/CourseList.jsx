@@ -1,65 +1,31 @@
-import CourseListRow from './CourseListRow';
 import WithLogging from '../HOC/WithLogging';
+import CourseListRow from './CourseListRow';
 
 function CourseList({ courses = [] }) {
   return (
-    <div
-      className="
-        my-20
-        flex
-        justify-center
-        min-[912px]:my-10
-      "
-    >
-      <table
-        id="CourseList"
-        className="
-          w-[75%]
-          border-collapse
-          text-[12px]
-          text-black
-          min-[520px]:w-[70%]
-          min-[520px]:text-xs
-          min-[912px]:w-[60%]
-          min-[912px]:text-[8px]
-        "
-      >
-        <thead>
-          {courses.length === 0 ? (
-            <CourseListRow
-              isHeader
-              textFirstCell="No course available yet"
-            />
-          ) : (
-            <>
-              <CourseListRow
-                isHeader
-                textFirstCell="Available courses"
-              />
-
-              <CourseListRow
-                isHeader
-                textFirstCell="Course name"
-                textSecondCell="Credit"
-              />
-            </>
-          )}
-        </thead>
-
-        {courses.length > 0 && (
+    <div className="courses mx-auto my-32 w-4/5">
+      {courses.length > 0 ? (
+        <table className="w-full border-collapse border border-gray-500">
+          <thead>
+            <CourseListRow textFirstCell="Available courses" isHeader={true} />
+            <CourseListRow textFirstCell="Course name" textSecondCell="Credit" isHeader={true} />
+          </thead>
           <tbody>
             {courses.map((course) => (
-              <CourseListRow
-                key={course.id}
-                textFirstCell={course.name}
-                textSecondCell={course.credit}
-              />
+              <CourseListRow key={course.id} textFirstCell={course.name} textSecondCell={course.credit} />
             ))}
           </tbody>
-        )}
-      </table>
+        </table>
+      ) : (
+        <table className="w-full border-collapse border border-gray-500">
+          <thead>
+            <CourseListRow isHeader={true} textFirstCell="No course available yet" />
+          </thead>
+        </table>
+      )}
     </div>
   );
 }
 
-export default WithLogging(CourseList);
+const CourseListWithLogging = WithLogging(CourseList);
+export default CourseListWithLogging

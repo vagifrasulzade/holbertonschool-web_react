@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react';
-import Header from './Header';
+import Header from "./Header";
+import { render } from "@testing-library/react";
 
-test('renders Header without crashing', () => {
+test("The Header component rendered successfully", () => {
   render(<Header />);
 });

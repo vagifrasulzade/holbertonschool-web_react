@@ -1,64 +1,36 @@
 import './Notifications.css';
-import closeButton from '../assets/close-button.png';
+import closeIcon from '../assets/close-icon.png';
 import NotificationItem from './NotificationItem';
 
-function Notifications({
-  notifications = [],
-  displayDrawer = false,
-}) {
-  const handleClick = () => {
-    console.log('Close button has been clicked');
-  };
-
+export default function Notifications({ notifications = [] }) {
   return (
     <>
-      <div className="notification-title">
-        Your notifications
-      </div>
-
-      {displayDrawer && (
-        <div className="notification-items">
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={handleClick}
-            style={{
-              position: 'absolute',
-              right: '10px',
-              top: '10px',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <img
-              src={closeButton}
-              alt="Close"
-              width="10"
-              height="10"
-            />
-          </button>
-
-          <p>Here is the list of notifications</p>
-
-          {notifications.length === 0 ? (
-            <p>No new notification for now</p>
-          ) : (
+      <div className="notification-title">Your notifications</div>
+      <div className='notification-items'>
+        {notifications.length > 0 ? (
+          <>
+            <p>Here is the list of notifications</p>
+            <button
+              onClick={() => console.log('Close button has been clicked')}
+              aria-label='Close'
+            >
+              <img src={closeIcon} alt='close icon' />
+            </button>
             <ul>
-              {notifications.map((notification) => (
+              {notifications.map((notification, index) => (
                 <NotificationItem
-                  key={notification.id}
+                  key={index}
                   type={notification.type}
                   value={notification.value}
                   html={notification.html}
                 />
               ))}
             </ul>
-          )}
-        </div>
+          </>
+        ) : (
+        null
       )}
+      </div>
     </>
   );
 }
-
-export default Notifications;

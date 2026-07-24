@@ -1,31 +1,10 @@
-function BodySection({ title = '', children = null }) {
+export default function BodySection({ title, children }) {
   return (
-    <section
-      className="
-        bodySection
-        px-0
-        py-2
-        min-[520px]:px-2
-        min-[912px]:px-9
-      "
-    >
-      <h2
-        className="
-          mb-2
-          text-sm
-          font-bold
-          min-[520px]:text-base
-          min-[912px]:text-[8px]
-        "
-      >
-        {title}
-      </h2>
-
-      <div>
+    <div className='bodySection max-w-full'>
+      <h2 className="font-bold text-xl mt-8">{title}</h2>
+      <div className="max-w-full overflow-hidden">
         {children}
       </div>
-    </section>
-  );
+    </div>
+  )
 }
-
-export default BodySection;

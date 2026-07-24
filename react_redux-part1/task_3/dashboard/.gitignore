@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+test.spec.js
+faultyJSX-component.jsx
+testRunner.js
+testtRunner.js
+faulty-authSlice-seq1.js
+faulty-notificationsSlice.js
+faulty-coursesSlice.js

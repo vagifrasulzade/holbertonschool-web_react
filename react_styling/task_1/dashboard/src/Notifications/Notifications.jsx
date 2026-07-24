@@ -1,85 +1,65 @@
-import { Component } from 'react';
+import React, { Component } from 'react';
 import './Notifications.css';
-import closeButton from '../assets/close-button.png';
+import closeIcon from '../assets/close-icon.png';
 import NotificationItem from './NotificationItem';
 
-class Notifications extends Component {
-  static defaultProps = {
-    notifications: [],
-    displayDrawer: false,
-  };
-
-  handleClick = () => {
-    console.log('Close button has been clicked');
-  };
+class Notifications extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
   markAsRead = (id) => {
-    console.log(`Notification ${id} has been marked as read`);
-  };
+    console.log(`Notification ${id + 1} has been marked as read`);
+  }
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.notifications.length !== this.props.notifications.length;
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      this.props.notifications.length !== nextProps.notifications.length ||
+      this.props.displayDrawer !== nextProps.displayDrawer
+    );
   }
 
   render() {
-    const { notifications, displayDrawer } = this.props;
+    const { notifications = [], displayDrawer = true } = this.props;
 
     return (
       <>
-        <div className="notification-title">
-          Your notifications
-        </div>
-
-        {displayDrawer && (
-          <div className="notification-items">
-            {notifications.length > 0 && (
-              <button
-                type="button"
-                aria-label="Close"
-                onClick={this.handleClick}
-                style={{
-                  position: 'absolute',
-                  right: '10px',
-                  top: '10px',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                <img
-                  src={closeButton}
-                  alt="Close"
-                  width="10"
-                  height="10"
-                />
-              </button>
-            )}
-
-            {notifications.length === 0 ? (
-              <p>No new notification for now</p>
-            ) : (
-              <>
-                <p>Here is the list of notifications</p>
-
-                <ul>
-                  {notifications.map((notification) => (
-                    <NotificationItem
-                      key={notification.id}
-                      id={notification.id}
-                      type={notification.type}
-                      value={notification.value}
-                      html={notification.html}
-                      markAsRead={this.markAsRead}
-                    />
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-        )}
+        <div className="notification-title">Your notifications</div>
+        {
+          displayDrawer ? (
+            <div className='notification-items'>
+              {notifications.length > 0 ? (
+                <>
+                  <p>Here is the list of notifications</p>
+                  <button
+                    onClick={() => console.log('Close button has been clicked')}
+                    aria-label='Close'
+                  >
+                    <img src={closeIcon} alt='close icon' />
+                  </button>
+                  <ul>
+                    {notifications.map((notification, index) => (
+                      <NotificationItem
+                        id={index}
+                        key={notification.id}
+                        type={notification.type}
+                        value={notification.value}
+                        html={notification.html}
+                        markAsRead={this.markAsRead}
+                      />
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p>No new notification for now</p>
+              )}
+            </div>
+          ) :
+          ([])
+        }
       </>
     );
   }
 }
 
-export default Notifications;
+export default Notifications

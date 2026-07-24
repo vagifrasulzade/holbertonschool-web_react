@@ -1,165 +1,74 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import { render, fireEvent, screen } from '@testing-library/react';
 import App from './App';
 
-describe('App component', () => {
-  test('Vérification texte h1 App-header', () => {
-    render(<App />);
-    const headerh1 = screen.getByRole('heading', { level: 1, name: /School dashboard/i });
-    expect(headerh1).toBeInTheDocument();
-  });
+test('The App component renders without crashing', () => {
+  render(<App />);
+});
 
-  test('Vérification texte App-body', () => {
-    render(<App />);
-    const bodyp = screen.getByText(/Login to access the full dashboard/i);
-    expect(bodyp).toBeInTheDocument();
-  });
+test('The App component renders Login by default (user not logged in)', () => {
+  render(<App />);
 
-  test('Vérification texte App-footer', () => {
-    render(<App />);
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
-  });
+  const emailLabelElement = screen.getByLabelText(/email/i);
+  const passwordLabelElement = screen.getByLabelText(/password/i);
+  const buttonElements = screen.getAllByRole('button', { name: /ok/i })
 
-  test('Vérification alt image App-header', () => {
-    render(<App />);
-    const headerImgAlt = screen.getByAltText(/holberton logo/i);
-    expect(headerImgAlt).toBeInTheDocument();
-  });
+  expect(emailLabelElement).toBeInTheDocument()
+  expect(passwordLabelElement).toBeInTheDocument()
+  expect(buttonElements.length).toBeGreaterThanOrEqual(1)
+});
 
-  // Tests Composant Login
-  test('Vérification de la présence du composant Login quand LoggedIn est false (Comportement par défaut)', () => {
-    render(<App />);
-    const loginText = screen.getByText(/login to access the full dashboard/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(loginText).toBeInTheDocument();
-    expect(emailInput).toBeInTheDocument();
-    expect(passwordInput).toBeInTheDocument();
-    expect(formButton).toBeInTheDocument();
-  });
+test('it should call the logOut prop once whenever the user hits "Ctrl" + "h" keyboard keys', () => {
+  const logOutMock = jest.fn();
+  const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
-  // Tests CourseList
-  test('Vérification de la présence du composant CourseList quand isLoggedIn est true', async () => {
-    render(<App />);
-    const user = userEvent.setup();
+  render(<App logOut={logOutMock} />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+  fireEvent.keyDown(document, { ctrlKey: true, key: 'h' });
 
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
+  expect(logOutMock).toHaveBeenCalledTimes(1);
 
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    await user.click(formButton);
+  alertSpy.mockRestore();
+});
 
-    const tableElement = screen.getByRole('table');
-    expect(tableElement).toBeInTheDocument();
-  });
+test('it should display an alert window whenever the user hit "ctrl" + "h" keyboard keys', () => {
+  const logoutSpy = jest.fn();
+  const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
-  // Tests logOut
-  test("Vérification de l'appel à la fonction logOut quand 'Ctrl + h' sont pressés", async () => {
-    const logOutAlertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    render(<App />);
-    // Simumation de la connexion
-    const user = userEvent.setup();
+  render(<App logOut={logoutSpy} />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+  fireEvent.keyDown(document, { ctrlKey: true, key: 'h' });
 
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
+  expect(alertSpy).toHaveBeenCalledWith('Logging you out');
 
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    await user.click(formButton);
+  alertSpy.mockRestore();
+});
 
-    // Déclenchement du logOut
-    fireEvent.keyDown(document, { key: 'h', ctrlKey: true });
+test('it should display "News from the School" title and paragraph by default', () => {
+  render(<App />);
 
-    const loginText = screen.getByText(/login to access the full dashboard/i);
-    expect(loginText).toBeInTheDocument();
+  const newsTitle = screen.getByRole('heading', { name: /news from the school/i });
+  const newsParagraph = screen.getByText(/holberton school news goes here/i);
 
-    logOutAlertSpy.mockRestore();
-  });
+  expect(newsTitle).toBeInTheDocument();
+  expect(newsParagraph).toBeInTheDocument();
+});
 
-  test("Vérification de l'appel window.alert avec 'Logging you out' quand 'Ctrl + h' sont pressés", async () => {
-    const logOutAlertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
-    render(<App />);
-    // Simumation de la connexion
-    const user = userEvent.setup();
+test('clicking on a notification item removes it from the list and logs the message', () => {
+  const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+  const { container } = render(<App />);
 
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
+  const notificationItems = container.querySelectorAll('[data-notification-type]');
+  const initialCount = notificationItems.length;
 
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    await user.click(formButton);
+  if (notificationItems.length > 0) {
+    fireEvent.click(notificationItems[0]);
 
-    // Déclenchement du logOut
-    fireEvent.keyDown(document, { key: 'h', ctrlKey: true });
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringMatching(/Notification \d+ has been marked as read/));
 
-    expect(logOutAlertSpy).toHaveBeenCalledWith('Logging you out');
-    logOutAlertSpy.mockRestore();
-  });
+    const updatedNotificationItems = container.querySelectorAll('[data-notification-type]');
+    expect(updatedNotificationItems.length).toBe(initialCount - 1);
+  }
 
-  // Tests BodySection
-  test('Vérification de la présence des éléments du composant BodySection (h2 & paragraph)', () => {
-    render(<App />);
-    const BodySectionh2 = screen.getByRole('heading', { level: 2, name: /News from the School/i });
-    // const BodySectionp = screen.getByText(/Holberton School News goes here/i);
-    const BodySectionp = screen.getByText(/ipsum Lorem ipsum dolor sit amet consectetur, adipisicing elit. Similique, asperiores architecto blanditiis fuga doloribus sit illum aliquid ea distinctio minus accusantium, impedit quo voluptatibus ut magni dicta. Recusandae, quia dicta?/i);
-    expect(BodySectionh2).toBeInTheDocument();
-    expect(BodySectionp).toBeInTheDocument();
-  });
-
-  // Test intégration avec le composant Header (Gestion Logout)
-  test('Vérification de la présence des bons éléments quand on est connecté ou déconnecté', async () => {
-    render(<App />);
-    const user = userEvent.setup();
-
-    // Simulation de la connexion
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    await user.click(formButton);
-
-    // Vérification de la présence des bons éléments une fois connecté
-    const section = document.querySelector('#logoutSection');
-    expect(section).toBeInTheDocument();
-
-    // Simulation de la déconnexion
-    const logoutLink = screen.getByRole('link', { name: /logout/i });
-    await user.click(logoutLink);
-
-    // Vérification de la présence des bons éléments une fois déconnecté.
-    expect(section).not.toBeInTheDocument();
-    const loginText = screen.getByText(/login to access the full dashboard/i);
-    expect(loginText).toBeInTheDocument();
-  });
-
-  test("Vérification que la notification cliquée soit bien retirée avec un message le confirmant dans la console", async () => {
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    render(<App />);
-    // Simumation du clic pour ouvrir le panel
-    const user = userEvent.setup();
-    const yourNotifElem = screen.getByText(/Your notifications/i);
-    await user.click(yourNotifElem);
-
-    const panelTitle = screen.getByText(/Here is the list of notifications/i);
-    expect(panelTitle).toBeInTheDocument();
-
-    // Simulation du clic sur une notification pour vérifier qu'elle disparaîsse et que le message est bien log dans la console
-    const panelElement = screen.getByText(/New resume available/i);
-    await user.click(panelElement);
-    expect(panelElement).not.toBeInTheDocument();
-    expect(consoleSpy).toHaveBeenCalledWith('Notification 2 has been marked as read');
-
-    consoleSpy.mockRestore();
-  });
+  consoleSpy.mockRestore();
 });

@@ -1,6 +1,6 @@
-import { render } from '@testing-library/react';
 import Login from './Login';
+import { render } from '@testing-library/react';
 
-test('renders Login without crashing', () => {
+test('The Login component rendered successfully', () => {
   render(<Login />);
 });

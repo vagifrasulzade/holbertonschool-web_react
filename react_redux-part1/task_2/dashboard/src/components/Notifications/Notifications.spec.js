@@ -1,139 +1,257 @@
-import Notifications from './Notifications';
-import { getLatestNotification } from '../../utils/utils';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from "@testing-library/react";
+import Notifications from "./Notifications";
+import { getLatestNotification } from "../../utils/utils";
 
-// Déclaration de notificaionsList
-const notificationsList = [
-  {id: 1, type: 'default', value: 'New course available'},
-  {id: 2, type: 'urgent', value: 'New resume available'},
-  {id: 3, type: 'urgent', html: getLatestNotification()}
-];
+jest.mock("../../utils/utils", () => ({
+  getLatestNotification: jest.fn(),
+}));
 
-const notificationsList2 = [
-  {id: 1, type: 'default', value: 'Fallen of Albaz'},
-  {id: 2, type: 'default', value: 'Dragon/effect'},
-  {id: 3, type: 'urgent', value: 'The new Branded Deck'}
-];
-
-const notificationsList3 = [
-  {id: 1, type: 'default', value: 'Fallen of Albaz'},
-  {id: 2, type: 'urgent', value: 'The new Branded Deck'}
-];
-
-describe('Notifications component', () => {
-  test("Vérification de la présence du message 'Here is the list of notifications'", () => {
-    render(<Notifications notifications={notificationsList} displayDrawer={true}/>);
-    const notifTitle = screen.getByText(/Here is the list of notifications/i);
-    expect(notifTitle).toBeInTheDocument();
+describe("Notifications component", () => {
+  beforeEach(() => {
+    getLatestNotification.mockReturnValue(
+      "<strong>Urgent requirement</strong> - complete by EOD"
+    );
   });
 
-  test('Vérification de la présence du bouton close', () => {
-    render(<Notifications notifications={notificationsList} displayDrawer={true}/>);
-    const closeButton = screen.getByRole('button');
+  test("renders the notifications title", () => {
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+      ],
+      displayDrawer: true,
+    };
+    render(<Notifications {...props} />);
+    const titleElement = screen.getByText(/Here is the list of notifications/i);
+    expect(titleElement).toBeInTheDocument();
+  });
+
+  test("renders the close button", () => {
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+      ],
+      displayDrawer: true,
+    };
+    render(<Notifications {...props} />);
+    const buttonElement = screen.getByRole("button", { name: /close/i });
+    expect(buttonElement).toBeInTheDocument();
+  });
+
+  test("logs message when close button is clicked", () => {
+    const consoleSpy = jest.spyOn(console, 'log');
+    const handleHideDrawerMock = jest.fn();
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+      ],
+      displayDrawer: true,
+      handleHideDrawer: handleHideDrawerMock,
+    };
+
+    render(<Notifications {...props} />);
+
+    const buttonElement = screen.getByRole("button", { name: /close/i });
+
+    fireEvent.click(buttonElement);
+
+    expect(handleHideDrawerMock).toHaveBeenCalledTimes(1);
+
+    consoleSpy.mockRestore();
+  });
+
+  test("it should display 3 notification items as expected through props", () => {
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        { id: 3, type: "urgent", html: { __html: getLatestNotification() } },
+      ],
+      displayDrawer: true,
+    };
+
+    render(<Notifications {...props} />);
+
+    const listItemElements = screen.getAllByRole("listitem");
+    expect(listItemElements).toHaveLength(3);
+  });
+
+  test('it should not display a title, button and a 3 list items, whenever the "displayDrawer" set to false', () => {
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        { id: 3, type: "urgent", html: { __html: getLatestNotification() } },
+      ],
+      displayDrawer: false,
+    };
+    render(<Notifications {...props} />);
+
+    const notificationsTitle = screen.queryByText(
+      /here is the list of notifications/i
+    );
+    const notificationsButton = screen.queryByRole("button");
+    const notificationsListItems = screen.queryAllByRole("listitem");
+
+    expect(notificationsTitle).toBeNull();
+    expect(notificationsButton).toBeNull();
+    expect(notificationsListItems).toHaveLength(0);
+  });
+
+  test('it should display a paragraph of "No new notifications for now" whenever the listNotification prop is empty', () => {
+    const props = {
+      notifications: [],
+      displayDrawer: true,
+    };
+    render(<Notifications {...props} />);
+
+    const notificationsTitle = screen.getByText(/no new notifications for now/i);
+    const notificationsListItems = screen.queryAllByRole("listitem");
+
+    expect(notificationsListItems).toHaveLength(0);
+    expect(notificationsTitle).toBeInTheDocument();
+  });
+
+  test('it should display "Your notifications" in all cases', () => {
+    const notificationsData = [
+      { id: 1, type: "default", value: "New course available" },
+    ];
+
+    const { rerender } = render(
+      <Notifications displayDrawer={false} notifications={[]} />
+    );
+
+    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
+
+    rerender(<Notifications displayDrawer={true} notifications={[]} />);
+
+    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
+
+    rerender(
+      <Notifications displayDrawer={true} notifications={notificationsData} />
+    );
+
+    expect(screen.getByText(/your notifications/i)).toBeInTheDocument();
+  });
+
+  test("it should display close button, p element, and notification items when displayDrawer is true", () => {
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        { id: 3, type: "urgent", html: { __html: getLatestNotification() } },
+      ],
+      displayDrawer: true,
+    };
+
+    render(<Notifications {...props} />);
+
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    const pElement = screen.getByText(/here is the list of notifications/i);
+    const listItems = screen.getAllByRole("listitem");
+
     expect(closeButton).toBeInTheDocument();
+    expect(pElement).toBeInTheDocument();
+    expect(listItems).toHaveLength(3);
   });
 
-  test('Vérification de la présence des 3 li', () => {
-    render(<Notifications notifications={notificationsList} displayDrawer={true} />);
-    const liElements = screen.getAllByRole('listitem');
-    expect(liElements).toHaveLength(3);
+  test("it should call markNotificationAsRead when a notification item is clicked", () => {
+    const markNotificationAsReadMock = jest.fn();
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        { id: 3, type: "urgent", html: { __html: getLatestNotification() } },
+      ],
+      displayDrawer: true,
+      markNotificationAsRead: markNotificationAsReadMock,
+    };
+
+    render(<Notifications {...props} />);
+
+    const listItems = screen.getAllByRole("listitem");
+
+    fireEvent.click(listItems[0]);
+    expect(markNotificationAsReadMock).toHaveBeenCalledWith(1);
+
+    markNotificationAsReadMock.mockClear();
+
+    fireEvent.click(listItems[1]);
+    expect(markNotificationAsReadMock).toHaveBeenCalledWith(2);
+
+    markNotificationAsReadMock.mockClear();
+
+    fireEvent.click(listItems[2]);
+    expect(markNotificationAsReadMock).toHaveBeenCalledWith(3);
   });
 
-  test('Vérification du texte des 3 li', () => {
-    render(<Notifications notifications={notificationsList} displayDrawer={true} />);
-    const liElements = screen.getAllByRole('listitem');
-    expect(liElements[0]).toHaveTextContent(/New course available/i);
-    expect(liElements[1]).toHaveTextContent(/New resume available/i);
-    expect(liElements[2]).toHaveTextContent(/Urgent requirement - complete by EOD/i);
+  test('should update when the notifications length changes', () => {
+    const initialNotifications = [
+      { id: 1, type: 'default', value: 'Notification 1' },
+    ];
+
+    const newNotifications = [
+      { id: 1, type: 'default', value: 'Notification 1' },
+      { id: 2, type: 'urgent', value: 'Notification 2' },
+    ];
+
+    const { rerender } = render(<Notifications notifications={initialNotifications} displayDrawer={true} />);
+
+    const listItems = screen.getAllByRole('listitem');
+    expect(listItems).toHaveLength(1);
+
+    rerender(<Notifications notifications={newNotifications} displayDrawer={true} />);
+
+    const updatedListItems = screen.getAllByRole('listitem');
+    expect(updatedListItems).toHaveLength(2);
   });
 
-  test("Vérification que les éléments de notifications-item s'affichent quand displayDrawer est true et que notifications n'est pas vide", () => {
-    render(<Notifications notifications={notificationsList} displayDrawer={true}/>);
-    const notificationText = screen.getByText(/Your notifications/i);
-    expect(notificationText).toBeInTheDocument();
-    // Vérification des éléments qui doivent s'afficher
-    expect(screen.getByRole('button')).toBeInTheDocument();
-    expect(screen.getByText(/Here is the list of notifications/i)).toBeInTheDocument();
-    const liElements = screen.getAllByRole('listitem');
-    expect(liElements[0]).toHaveTextContent(/New course available/i);
-    expect(liElements[1]).toHaveTextContent(/New resume available/i);
-    expect(liElements[2]).toHaveTextContent(/Urgent requirement - complete by EOD/i);
+  test('should maintain same content when notifications are unchanged', () => {
+    const initialNotifications = [
+      { id: 1, type: 'default', value: 'Notification 1' },
+      { id: 2, type: 'urgent', value: 'Notification 2' },
+    ];
+
+    const { rerender } = render(<Notifications notifications={initialNotifications} displayDrawer={true} />);
+
+    const firstListItems = screen.getAllByRole('listitem');
+    expect(firstListItems).toHaveLength(2);
+
+    rerender(<Notifications notifications={initialNotifications} displayDrawer={true} />);
+
+    const secondListItems = screen.getAllByRole('listitem');
+    expect(secondListItems).toHaveLength(2);
+    expect(secondListItems[0].textContent).toBe(firstListItems[0].textContent);
   });
 
-  test("Vérification de l'affichage du message 'No new notification for now' quand displayDrawer est true et que notifications est vide", () => {
-    render(<Notifications notifications={[]} displayDrawer={true}/>);
-    const notificationText = screen.getByText(/Your notifications/i);
-    expect(notificationText).toBeInTheDocument();
-    // Vérification des éléments qui doivent s'afficher ou non
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
-    const noNotifMessage = screen.getByText(/No new notification for now/i);
-    expect(noNotifMessage).toBeInTheDocument();
+  test('should call handleDisplayDrawer when "Your notifications" is clicked', () => {
+    const handleDisplayDrawerMock = jest.fn();
+    const props = {
+      notifications: [],
+      displayDrawer: false,
+      handleDisplayDrawer: handleDisplayDrawerMock,
+    };
+
+    render(<Notifications {...props} />);
+
+    const notificationTitle = screen.getByText('Your notifications');
+    fireEvent.click(notificationTitle);
+
+    expect(handleDisplayDrawerMock).toHaveBeenCalledTimes(1);
   });
 
-  test("Vérification que les éléments de notifications-item ne s'affichent pas quand displayDrawer est false", () => {
-    render(<Notifications notifications={notificationsList} displayDrawer={false}/>);
-    const notificationText = screen.getByText(/Your notifications/i);
-    expect(notificationText).toBeInTheDocument();
-    // Vérification des éléments qui ne doivent pas s'afficher
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
-    expect(screen.queryByRole('listitem')).not.toBeInTheDocument();
-    expect(screen.queryByText(/Here is the list of notifications/i)).not.toBeInTheDocument();
-  });
+  test('should call handleHideDrawer when close button is clicked', () => {
+    const handleHideDrawerMock = jest.fn();
+    const props = {
+      notifications: [{ id: 1, type: 'default', value: 'Test notification' }],
+      displayDrawer: true,
+      handleHideDrawer: handleHideDrawerMock,
+    };
 
-  test("Vérification de l'eventHandler 'click' sur la notification", () => {
-    const readSpy = jest.fn();
-    render(<Notifications notifications={notificationsList} displayDrawer={true} markNotificationAsRead={readSpy} />);
-    const notificationText = screen.getByText(/New resume available/i);
-    fireEvent.click(notificationText);
-    expect(readSpy).toHaveBeenCalledWith(2);
-  });
+    render(<Notifications {...props} />);
 
-  test("Vérification que le composant ne se re-rende pas si la longueur de notificationsList ne change pas", () => {
-      const { rerender } = render(<Notifications notifications={notificationsList} displayDrawer={true} />);
-      let liElements = screen.getAllByRole('listitem');
-      expect(liElements[0]).toHaveTextContent(/New course available/i);
-      expect(liElements[1]).toHaveTextContent(/New resume available/i);
-      expect(liElements[2]).toHaveTextContent(/Urgent requirement - complete by EOD/i);
-
-      rerender(<Notifications notifications={notificationsList2} displayDrawer={true} />);
-      liElements = screen.getAllByRole('listitem');
-      expect(liElements[0]).toHaveTextContent(/New course available/i);
-      expect(liElements[1]).toHaveTextContent(/New resume available/i);
-      expect(liElements[2]).toHaveTextContent(/Urgent requirement - complete by EOD/i);
-    });
-
-  test("Vérification que le composant se re-rende si la longueur de notificationsList change", () => {
-    const { rerender } = render(<Notifications notifications={notificationsList} displayDrawer={true} />);
-    let liElements = screen.getAllByRole('listitem');
-    expect(liElements).toHaveLength(3);
-    expect(liElements[0]).toHaveTextContent(/New course available/i);
-    expect(liElements[1]).toHaveTextContent(/New resume available/i);
-    expect(liElements[2]).toHaveTextContent(/Urgent requirement - complete by EOD/i);
-
-    rerender(<Notifications notifications={notificationsList3} displayDrawer={true} />);
-    liElements = screen.getAllByRole('listitem');
-    expect(liElements).toHaveLength(2);
-    expect(liElements[0]).toHaveTextContent(/Fallen of Albaz/i);
-    expect(liElements[1]).toHaveTextContent(/The new Branded Deck/i);
-  });
-
-  // Tests sur les Event Handler liés à l'affichage du Display Drawer
-  test("Vérification de l'eventHandler 'click' sur le bouton", () => {
-    const hideDrawerSpy = jest.fn();
-    render(<Notifications notifications={notificationsList} displayDrawer={true} handleHideDrawer={hideDrawerSpy} />);
-    const closeButton = screen.getByRole('button');
+    const closeButton = screen.getByRole('button', { name: /close/i });
     fireEvent.click(closeButton);
-    expect(hideDrawerSpy).toHaveBeenCalledTimes(1);
-    hideDrawerSpy.mockReset();
-  });
 
-  test("Vérification de l'eventHandler 'click' sur le paragraphe 'Your notifications'", () => {
-    const displayDrawerSpy = jest.fn();
-    render(<Notifications notifications={notificationsList} displayDrawer={true} handleDisplayDrawer={displayDrawerSpy} />);
-    const yourNotifications = screen.getByText(/Your notifications/i);
-    fireEvent.click(yourNotifications);
-    expect(displayDrawerSpy).toHaveBeenCalledTimes(1);
-    displayDrawerSpy.mockReset();
+    expect(handleHideDrawerMock).toHaveBeenCalledTimes(1);
   });
 });

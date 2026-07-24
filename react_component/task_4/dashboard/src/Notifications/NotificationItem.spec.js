@@ -1,60 +1,51 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import NotificationItem from './NotificationItem';
+import { getLatestNotification } from '../utils/utils';
 
-describe('NotificationItem component', () => {
-  test('renders a default notification in blue', () => {
-    render(
-      <NotificationItem
-        id={1}
-        type="default"
-        value="New course available"
-      />
-    );
 
-    const item = screen.getByText(/new course available/i);
+test('it should display the correct notification with a red color, and set the "data-notification-type" to urgent whenever it receives the type "urgent" props', () => {
+  const props = {
+    type: 'urgent',
+    html: {__html: getLatestNotification()},
+  }
 
-    expect(item).toHaveStyle({ color: 'blue' });
-    expect(item).toHaveAttribute(
-      'data-notification-type',
-      'default'
-    );
-  });
+  render(<NotificationItem {...props} />);
 
-  test('renders an urgent notification in red', () => {
-    render(
-      <NotificationItem
-        id={2}
-        type="urgent"
-        value="New resume available"
-      />
-    );
+  const liElement = screen.getByRole('listitem');
 
-    const item = screen.getByText(/new resume available/i);
+  expect(liElement).toHaveStyle({ color: 'red' });
+  expect(liElement).toHaveAttribute('data-notification-type', 'urgent');
+});
 
-    expect(item).toHaveStyle({ color: 'red' });
-    expect(item).toHaveAttribute(
-      'data-notification-type',
-      'urgent'
-    );
-  });
+test('it should display the correct notification with a blue color, and set the "data-notification-type" to default whenever it receives the type "default" props', () => {
+  const props = {
+    type: 'default',
+    html: undefined,
+  }
 
-  test('calls markAsRead with the notification id when clicked', () => {
-    const markAsRead = jest.fn();
+  render(<NotificationItem {...props} />);
 
-    render(
-      <NotificationItem
-        id={3}
-        type="urgent"
-        value="Urgent notification"
-        markAsRead={markAsRead}
-      />
-    );
+  const liElement = screen.getByRole('listitem');
 
-    fireEvent.click(
-      screen.getByText(/urgent notification/i)
-    );
+  expect(liElement).toHaveStyle({ color: 'blue' });
+  expect(liElement).toHaveAttribute('data-notification-type', 'default');
+});
 
-    expect(markAsRead).toHaveBeenCalledTimes(1);
-    expect(markAsRead).toHaveBeenCalledWith(3);
-  });
+test('it should call markAsRead with the correct id when the notification item is clicked', () => {
+  const mockMarkAsRead = jest.fn();
+  const props = {
+    id: 42,
+    type: 'default',
+    value: 'Test notification',
+    markAsRead: mockMarkAsRead,
+  };
+
+  render(<NotificationItem {...props} />);
+
+  const liElement = screen.getByRole('listitem');
+
+  fireEvent.click(liElement);
+
+  expect(mockMarkAsRead).toHaveBeenCalledTimes(1);
+  expect(mockMarkAsRead).toHaveBeenCalledWith(42);
 });

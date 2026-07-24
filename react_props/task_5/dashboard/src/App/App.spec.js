@@ -1,26 +1,36 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import App from './App'
 
-describe('App component', () => {
-  test('renders Login when isLoggedIn is false', () => {
-    render(<App isLoggedIn={false} />);
+test('The App component render successfully', () => {
+  render(<App />);
+});
 
-    expect(
-      screen.getByText(/login to access the full dashboard/i)
-    ).toBeInTheDocument();
+test('The App component render successfully', () => {
+  const props = {
+    isLoggedIn: true
+  }
 
-    expect(
-      screen.queryByRole('table')
-    ).not.toBeInTheDocument();
-  });
+  render(<App {...props} />);
 
-  test('renders CourseList when isLoggedIn is true', () => {
-    render(<App isLoggedIn />);
+  const tableElement = screen.getByRole('table');
 
-    expect(screen.getByRole('table')).toBeInTheDocument();
+  expect(tableElement).toBeInTheDocument()
+});
 
-    expect(
-      screen.queryByText(/login to access the full dashboard/i)
-    ).not.toBeInTheDocument();
-  });
+test('The App component render successfully', () => {
+  const props = {
+    isLoggedIn: false
+  }
+
+  render(<App {...props} />);
+
+  const inputElements = screen.getAllByLabelText(/email|password/i);
+  const emailLabelElement = screen.getByLabelText(/email/i);
+  const passwordLabelElement = screen.getByLabelText(/password/i);
+  const buttonElementText = screen.getByRole('button', { name: /ok/i })
+
+  expect(inputElements).toHaveLength(2)
+  expect(emailLabelElement).toBeInTheDocument()
+  expect(passwordLabelElement).toBeInTheDocument()
+  expect(buttonElementText).toBeInTheDocument()
 });

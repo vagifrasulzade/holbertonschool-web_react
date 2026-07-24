@@ -1,16 +1,14 @@
+.courses {
+    margin: 130px auto;
+    width: 90%;
+    height: 31vh;
+}
+
 #CourseList {
-  width: calc(100% - 40px);
-  margin: 40px 20px;
-  border-collapse: collapse;
+    width: 100%;
 }
 
-#CourseList th,
-#CourseList td {
-  padding: 8px;
-  border: 1px solid #cccccc;
-  text-align: left;
-}
-
-#CourseList thead tr:first-child th {
-  text-align: center;
+table, th, tr, td {
+    border-collapse: collapse;
+    border: 1px solid rgb(161, 161, 161);
 }

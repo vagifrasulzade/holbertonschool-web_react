@@ -1,21 +1,38 @@
-import { getCurrentYear, getFooterCopy } from '../../utils/utils';
 import { useSelector } from 'react-redux';
+import { getCurrentYear, getFooterCopy } from "../../utils/utils";
+import { StyleSheet, css } from "aphrodite";
 
-function Footer() {
+const styles = StyleSheet.create({
+  footer: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: "5px red solid",
+    gap: "10px",
+  },
+  p: {
+    fontFamily: "Roboto, sans-serif",
+    fontStyle: "italic",
+    fontSize: "1.3rem",
+    padding: "0 3px",
+    margin: 0,
+  },
+});
 
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const user = useSelector((state) => state.auth.user);
+export default function Footer() {
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
-  const currentYear = getCurrentYear();
-  const footerText = getFooterCopy(true);
   return (
-    <div className='App-footer text-center italic text-sm md:text-base border-t border-t-[2.5px] border-t-[var(--main-color)] mt-auto pb-8 pt-4'>
-      <p>Copyright {currentYear} - {footerText}</p>
+    <div className={css(styles.footer)}>
+      <p className={css(styles.p)}>
+        Copyright {getCurrentYear()} - {getFooterCopy(true)}
+      </p>
       {isLoggedIn && (
-        <p><a href="#">Contact us</a></p>
+        <span className={css(styles.p)}>
+          <a href="#">Contact us</a>
+        </span>
       )}
     </div>
-  )
+  );
 }
-
-export default Footer;

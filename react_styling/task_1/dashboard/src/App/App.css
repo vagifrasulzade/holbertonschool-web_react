@@ -1,18 +1,6 @@
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap'); */
 
 .App {
-  min-height: 100vh;
-  padding: 0px;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  padding: 0 12px;
 }
-
-
-

@@ -1,22 +1,32 @@
-function CourseListRow({ isHeader = false, textFirstCell = '', textSecondCell = null }) {
-  let trContent = <>
-    <td className="border border-gray-400 pl-[8px]">{ textFirstCell }</td>
-    <td className="border border-gray-400 pl-[8px]">{ textSecondCell }</td>
-  </>;
-  if (isHeader) {
-    if (textSecondCell === null) {
-      trContent = <th className="border border-gray-400" colSpan={2}>{ textFirstCell }</th>
-    }
-    else {
-      trContent = <>
-        <th className="border border-gray-400">{ textFirstCell }</th>
-        <th className="border border-gray-400">{ textSecondCell }</th>
-      </>
-    }
+import { StyleSheet, css } from 'aphrodite';
+
+const styles = StyleSheet.create({
+  headerRow: {
+    backgroundColor: '#deb5b545'
+  },
+  row: {
+    backgroundColor: '#f5f5f5ab'
   }
-  return(
-    <tr className={isHeader ? "bg-table-header/[66%]" : "bg-table-rows/[45%]"}>{ trContent }</tr>
+});
+
+export default function CourseListRow({
+  isHeader = false,
+  textFirstCell = '',
+  textSecondCell = null
+}) {
+  const rowStyle = isHeader ? styles.headerRow : styles.row;
+
+  return (
+    isHeader ? (
+      <tr className={css(rowStyle)}>
+        <th colSpan={textSecondCell ? 1 : 2}>{textFirstCell}</th>
+        {textSecondCell ? <th>{textSecondCell}</th> : null}
+      </tr>
+    ) : (
+      <tr className={css(rowStyle)}>
+        <td>{textFirstCell}</td>
+        <td>{textSecondCell}</td>
+      </tr>
+    )
   )
 }
-
-export default CourseListRow;

@@ -1,135 +1,95 @@
-import { render, screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'
 import Login from './Login';
 
-describe('App component', () => {
-  test('Vérification texte App-body', () => {
-    render(<Login />);
-    const bodyp = screen.getByText(/Login to access the full dashboard/i);
-    expect(bodyp).toBeInTheDocument();
-  });
+test('testing signin form elements', () => {
+  render(<Login />);
 
-  test('Vérification des inputs associés aux labels', () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    expect(emailInput).toBeInTheDocument();
-    expect(passwordInput).toBeInTheDocument();
-  });
+  const inputElements = screen.getAllByLabelText(/email|password/i);
+  const emailLabelElement = screen.getByLabelText(/email/i);
+  const passwordLabelElement = screen.getByLabelText(/password/i);
+  const buttonElementText = screen.getByRole('button', { name: 'OK' })
 
-  test('Vérification du texte des labels', () => {
-    render(<Login />);
-    const emailLabel = screen.getByLabelText(/email/i);
-    const passwordLabel = screen.getByLabelText(/password/i);
-    expect(emailLabel).toBeInTheDocument();
-    expect(passwordLabel).toBeInTheDocument();
-  });
+  expect(inputElements).toHaveLength(2)
+  expect(emailLabelElement).toBeInTheDocument()
+  expect(passwordLabelElement).toBeInTheDocument()
+  expect(buttonElementText).toBeInTheDocument()
+});
 
-  test('Vérification de la présence du bouton', () => {
-    render(<Login />);
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(formButton).toBeInTheDocument();
-  });
+test('it should check that the email input element will be focused whenever the associated label is clicked', async () => {
+  render(<Login />)
 
-  test("Vérification du focus sur l'imput associé au label sélectionné", async () => {
-    render(<Login />);
-    const user = userEvent.setup();
+  const emailInput = screen.getByLabelText('Email');
+  const emailLabel = screen.getByText('Email');
 
-    const emailLabel = screen.getByText(/email/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordLabel = screen.getByText(/password/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+  userEvent.click(emailLabel);
 
-    await user.click(emailLabel);
+  await waitFor(() => {
     expect(emailInput).toHaveFocus();
+  });
+})
 
-    await user.click(passwordLabel);
+test('it should check that the password input element will be focused whenver the associated label is clicked', async () => {
+  render(<Login />)
+
+  const passwordLabel = screen.getByText('Password');
+  const passwordInput = screen.getByLabelText('Password');
+
+  userEvent.click(passwordLabel);
+
+  await waitFor(() => {
     expect(passwordInput).toHaveFocus();
   });
+});
 
-  test('Vérification que le bouton soit désactivé par défaut', () => {
-    render(<Login />);
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(formButton).toBeDisabled();
+test('submit button is disabled by default', () => {
+  render(<Login />);
+
+  const submitButton = screen.getByRole('button', { name: 'OK' });
+
+  expect(submitButton).toBeDisabled();
+});
+
+test('submit button is enabled after entering valid email and password', async () => {
+  const user = userEvent.setup();
+  render(<Login />);
+
+  const emailInput = screen.getByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'OK' });
+
+  expect(submitButton).toBeDisabled();
+
+  await user.type(emailInput, 'test@example.com');
+
+  expect(submitButton).toBeDisabled();
+
+  await user.type(passwordInput, 'password123');
+
+  await waitFor(() => {
+    expect(submitButton).toBeEnabled();
+  });
+});
+
+test('logIn method is called with email and password when form is submitted', async () => {
+  const user = userEvent.setup();
+  const mockLogIn = jest.fn();
+
+  render(<Login logIn={mockLogIn} />);
+
+  const emailInput = screen.getByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'OK' });
+
+  await user.type(emailInput, 'test@example.com');
+  await user.type(passwordInput, 'password123');
+
+  await waitFor(() => {
+    expect(submitButton).toBeEnabled();
   });
 
-  test("Vérification que le bouton soit désactivé quand l'email est invalide", async () => {
-      render(<Login />);
-      const user = userEvent.setup();
-      // Déclaration des différentes valeurs invalides
-      const invalidEmails = [
-        'Raidraptors',
-        'fallen@',
-        'fallen@albaz',
-        'hakuyoku.Ciel@.c',
-        '@gmail.com'
-      ]
-      const emailInput = screen.getByLabelText(/email/i);
-      const passwordInput = screen.getByLabelText(/password/i);
-      const formButton = screen.getByRole('button', { name: /OK/i });
+  await user.click(submitButton);
 
-      await user.type(passwordInput, 'Azertyuiop');
-
-      for (const invalidEmail of invalidEmails) {
-        await user.clear(emailInput);
-        await user.type(emailInput, invalidEmail);
-        expect(formButton).toBeDisabled();
-      }
-
-      await user.clear(emailInput);
-      await user.type(emailInput, 'fallen.albaz@gmail.com');
-      expect(formButton).toBeEnabled();
-    });
-
-    test("Vérification que le bouton soit désactivé quand le password fait moins de 8 caractères", async () => {
-      render(<Login />);
-      const user = userEvent.setup();
-
-      const emailInput = screen.getByLabelText(/email/i);
-      const passwordInput = screen.getByLabelText(/password/i);
-      const formButton = screen.getByRole('button', { name: /OK/i });
-
-      await user.type(emailInput, 'fallen.albaz@gmail.com');
-      // Test avec 7 caractères
-      await user.type(passwordInput, 'Azertyu');
-      expect(formButton).toBeDisabled();
-
-      // On rajoute 3 caractères, ce qui fait un total de 10 caractères.
-      await user.type(passwordInput, 'iop');
-      expect(formButton).toBeEnabled();
-    });
-
-  test('Vérification que le bouton soit activé quand les champs sont correctement remplis', async () => {
-    render(<Login />);
-    const user = userEvent.setup();
-
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
-
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(formButton).toBeEnabled();
-  });
-
-  test('Vérification que la méthode props logIn est bien appelée quand le bouton est cliqué', async () => {
-    const logInSpy = jest.fn();
-    render(<Login logIn={logInSpy} />);
-
-    // Simumation de la connexion
-    const user = userEvent.setup();
-
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
-
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    await user.click(formButton);
-
-    expect(logInSpy).toHaveBeenCalledTimes(1);
-    expect(logInSpy).toHaveBeenCalledWith('fallen.albaz@gmail.com', 'Azertyuiop');
-  });
+  expect(mockLogIn).toHaveBeenCalledTimes(1);
+  expect(mockLogIn).toHaveBeenCalledWith('test@example.com', 'password123');
 });

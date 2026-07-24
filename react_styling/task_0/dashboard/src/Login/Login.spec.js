@@ -1,37 +1,43 @@
-
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'
 import Login from './Login';
 
-describe('Login component tests', () => {
-  test('renders 2 labels, 2 inputs, and 1 button', () => {
-    const { container } = render(<Login />);
+test('testing signin form elements', () => {
+  render(<Login />);
 
-    const labels = container.querySelectorAll('label');
-    const inputs = container.querySelectorAll('input');
-    const buttons = container.querySelectorAll('button');
+  const inputElements = screen.getAllByLabelText(/email|password/i);
+  const emailLabelElement = screen.getByLabelText(/email/i);
+  const passwordLabelElement = screen.getByLabelText(/password/i);
+  const buttonElementText = screen.getByRole('button', { name: /OK/i })
 
-    expect(labels).toHaveLength(2);
-    expect(inputs).toHaveLength(2);
-    expect(buttons).toHaveLength(1);
+  expect(inputElements).toHaveLength(2);
+  expect(emailLabelElement).toBeInTheDocument()
+  expect(passwordLabelElement).toBeInTheDocument()
+  expect(buttonElementText).toBeInTheDocument()
+});
+
+test('it should check that the email input element will be focused whenever the associated label is clicked', async () => {
+  render(<Login />)
+
+  const emailInput = screen.getByLabelText(/Email/i);
+  const emailLabel = screen.getByText(/Email/i);
+
+  userEvent.click(emailLabel);
+
+  await waitFor(() => {
+    expect(emailInput).toHaveFocus();
   });
+})
 
-  test('focuses the corresponding input when each label is clicked', async () => {
-    render(<Login />);
+test('it should check that the password input element will be focused whenver the associated label is clicked', async () => {
+  render(<Login />)
 
-    // 1. screen.getByLabelText directly finds the <input> linked to that label
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    
-    // 2. To get the actual <label> elements to click them, use getByText
-    const emailLabel = screen.getByText(/email/i);
-    const passwordLabel = screen.getByText(/password/i);
-    
-    // 3. Simulate clicking the labels and assert the input receives focus
-    await userEvent.click(emailLabel);
-    expect(emailInput).toHaveFocus(); // Note: Don't forget the execution parentheses ()
+  const passwordLabel = screen.getByText(/Password/i);
+  const passwordInput = screen.getByLabelText(/Password/i);
 
-    await userEvent.click(passwordLabel); // Fixed typo from 'passworLabel'
+  userEvent.click(passwordLabel);
+
+  await waitFor(() => {
     expect(passwordInput).toHaveFocus();
   });
 });

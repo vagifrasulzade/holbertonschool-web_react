@@ -1,99 +1,74 @@
-import { Component, Fragment } from 'react';
-import './App.css';
-import Header from '../Header/Header';
-import Footer from '../Footer/Footer';
-import Login from '../Login/Login';
+import { Component } from 'react';
 import Notifications from '../Notifications/Notifications';
+import Footer from '../Footer/Footer';
+import Header from '../Header/Header';
+import Login from '../Login/Login';
 import CourseList from '../CourseList/CourseList';
-import BodySection from '../BodySection/BodySection';
-import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
 import { getLatestNotification } from '../utils/utils';
+import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
+import BodySection from '../BodySection/BodySection';
 
-class App extends Component {
-  static defaultProps = {
-    isLoggedIn: false,
-    logOut: () => {},
-  };
+const notificationsList = [
+  { id: 1, type: 'default', value: 'New course available' },
+  { id: 2, type: 'urgent', value: 'New resume available' },
+  { id: 3, type: 'urgent', html: { __html: getLatestNotification()} }
+];
 
-  handleKeyDown = (event) => {
-    if (
-      'key' in event
-      && event.ctrlKey
-      && event.key === 'h'
-    ) {
-      window.alert('Logging you out');
-      this.props.logOut();
-    }
-  };
+const coursesList = [
+  { id: 1, name: 'ES6', credit: 60 },
+  { id: 2, name: 'Webpack', credit: 20 },
+  { id: 3, name: 'React', credit: 40 }
+];
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyDown);
+export default class App extends Component {
+  constructor(props) {
+    super(props);
   }
 
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeydown);
+  }
+  
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
+
+  handleKeydown = (e) => {
+    if (e.ctrlKey && e.key === "h" ) {
+      alert("Logging you out");
+      if (this.props.logOut) {
+        this.props.logOut();
+      }
+    }
   }
 
   render() {
-    const notificationsList = [
-      {
-        id: 1,
-        type: 'default',
-        value: 'New course available',
-      },
-      {
-        id: 2,
-        type: 'urgent',
-        value: 'New resume available',
-      },
-      {
-        id: 3,
-        type: 'urgent',
-        html: {
-          __html: getLatestNotification(),
-        },
-      },
-    ];
-
-    const coursesList = [
-      { id: 1, name: 'ES6', credit: 60 },
-      { id: 2, name: 'Webpack', credit: 20 },
-      { id: 3, name: 'React', credit: 40 },
-    ];
-
-    const { isLoggedIn } = this.props;
+    const { isLoggedIn = false, logOut = () => {} } = this.props;
 
     return (
-      <Fragment>
-        <div className="App">
-          <div className="root-notifications">
-            <Notifications
-              notifications={notificationsList}
-              displayDrawer
-            />
-          </div>
-
+      <div className="relative px-3 min-h-screen">
+        <Notifications notifications={notificationsList} />
+        <div className="flex-1">
           <Header />
-
-          {isLoggedIn ? (
-            <BodySectionWithMarginBottom title="Course list">
-              <CourseList courses={coursesList} />
-            </BodySectionWithMarginBottom>
-          ) : (
-            <BodySectionWithMarginBottom title="Log in to continue">
-              <Login />
-            </BodySectionWithMarginBottom>
-          )}
-
+          {
+            !isLoggedIn ? (
+              <BodySectionWithMarginBottom title='Log in to continue'>
+                <Login />
+              </BodySectionWithMarginBottom>
+            ) : (
+              <BodySectionWithMarginBottom title='Course list'>
+                <CourseList courses={coursesList} />
+              </BodySectionWithMarginBottom>
+            )
+          }
           <BodySection title="News from the School">
-            <p>Holberton School news goes here</p>
+            <p>
+              Holberton School news goes here
+            </p>
           </BodySection>
-
-          <Footer />
         </div>
-      </Fragment>
+        <Footer />
+      </div>
     );
   }
 }
-
-export default App;

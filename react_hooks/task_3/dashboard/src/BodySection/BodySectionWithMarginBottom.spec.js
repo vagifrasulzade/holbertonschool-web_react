@@ -1,20 +1,71 @@
-import BodySectionWithMarginBottom from "./BodySectionWithMarginBottom";
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { StyleSheetTestUtils } from 'aphrodite';
+import BodySectionWithMarginBottom from './BodySectionWithMarginBottom';
 
-describe('BodySectionWithMarginBottom component', () => {
-  test("Vérification le composant BodySectionWithMarginBottom génère une div avec la bonne classe", () => {
-    const { container } = render(<BodySectionWithMarginBottom title={'Fallen of Albaz'}/>);
-    const divElement = container.querySelector('.bodySectionWithMargin');
-    expect(divElement).toBeInTheDocument();
-  });
+beforeAll(() => {
+  StyleSheetTestUtils.suppressStyleInjection();
+});
 
-  test("Vérification le composant BodySection est bien rendu dans le composant BodySectionWithMarginBottom", () => {
+afterAll(() => {
+  StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
+});
+
+const mockBodySection = jest.fn();
+jest.mock("./BodySection", () => {
+  const MockBodySection = (props) => {
+    mockBodySection(props);
+    return (
+      <div>
+        <h2>{props.title}</h2>
+        {props.children}
+      </div>
+    );
+  };
+  MockBodySection.displayName = 'MockBodySection';
+  return MockBodySection;
+});
+
+describe('BodySectionWithMarginBottom', () => {
+    test('should render BodySection inside a div with class bodySectionWithMargin', () => {
+      const { container } = render(
+        <BodySectionWithMarginBottom title="Hello!">
+          <p>This is child content</p>
+          <span>Hey there!</span>
+        </BodySectionWithMarginBottom>
+      );
+
+      expect(mockBodySection).toHaveBeenCalled();
+      const classNames = container.firstChild.className;
+      expect(classNames).toMatch(/bodySectionWithMargin_/);
+      expect(mockBodySection).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: "Hello!",
+          children: expect.anything(),
+        })
+      );
+      expect(container.firstChild).toHaveTextContent('Hello!');
+      const bodySectionWithMargin = container.firstChild;
+      expect(bodySectionWithMargin).toHaveTextContent('Hello!');
+      expect(bodySectionWithMargin).toHaveTextContent('This is child content');
+      expect(bodySectionWithMargin).toHaveTextContent('Hey there!');
+
+      const pElement = container.querySelector('p');
+      const spanElement = container.querySelector('span');
+      expect(pElement).toBeInTheDocument();
+      expect(pElement).toHaveTextContent('This is child content');
+      expect(spanElement).toBeInTheDocument();
+      expect(spanElement).toHaveTextContent('Hey there!');
+    });
+
+  test('should apply margin-bottom of 40px to the div with class bodySectionWithMargin', () => {
     const { container } = render(
-      <BodySectionWithMarginBottom title={'Fallen of Albaz'}>
-        <p>Dragon/Effect</p>
+      <BodySectionWithMarginBottom title="Test Title">
+        <p>Child Content</p>
       </BodySectionWithMarginBottom>
     );
-    const divComponent = container.querySelector('.bodySection');
-    expect(divComponent).toBeInTheDocument();
+
+    const divWithMargin = container.firstChild;
+    expect(divWithMargin).toBeInTheDocument();
+    expect(divWithMargin.className).toMatch(/bodySectionWithMargin_/);
   });
 });

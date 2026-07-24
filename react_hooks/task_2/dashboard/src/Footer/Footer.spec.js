@@ -1,31 +1,52 @@
 import { render, screen } from '@testing-library/react';
-import newContext from '../Context/context.js';
 import Footer from './Footer';
+import newContext from '../Context/context';
 
-describe('Footer component', () => {
-  test("Vérification que le texte de Copyright s'affiche, mais pas le link quand isLoggedIn est false.", () => {
-    render(
-      <newContext.Provider value={{ user: { isLoggedIn: false } }}>
-        <Footer />
-      </newContext.Provider>
-    );
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
+test('It should render footer with copyright text', () => {
+  render(<Footer />)
 
-    const footerLink = screen.queryByRole('link', { name: /Contact us/i });
-    expect(footerLink).not.toBeInTheDocument();
-  });
+  const footerParagraph = screen.getByText(/copyright/i);
 
-  test("Vérification que le texte de Copyright et le link s'affichent quand isLoggedIn est true.", () => {
-    render(
-      <newContext.Provider value={{ user: { isLoggedIn: true } }}>
-        <Footer />
-      </newContext.Provider>
-    );
-    const footerp = screen.getByText(/Copyright \d{4} - holberton School/i);
-    expect(footerp).toBeInTheDocument();
+  expect(footerParagraph).toHaveTextContent(new RegExp(`copyright ${(new Date()).getFullYear()}`, 'i'))
+  expect(footerParagraph).toHaveTextContent(/holberton school/i)
+});
 
-    const footerLink = screen.queryByRole('link', { name: /Contact us/i });
-    expect(footerLink).toBeInTheDocument();
-  });
+test('Contact us link is not displayed when user is logged out', () => {
+  const contextValue = {
+    user: {
+      email: '',
+      password: '',
+      isLoggedIn: false
+    },
+    logOut: jest.fn()
+  };
+
+  render(
+    <newContext.Provider value={contextValue}>
+      <Footer />
+    </newContext.Provider>
+  );
+
+  const contactLink = screen.queryByText(/contact us/i);
+  expect(contactLink).not.toBeInTheDocument();
+});
+
+test('Contact us link is displayed when user is logged in', () => {
+  const contextValue = {
+    user: {
+      email: 'test@test.com',
+      password: 'password123',
+      isLoggedIn: true
+    },
+    logOut: jest.fn()
+  };
+
+  render(
+    <newContext.Provider value={contextValue}>
+      <Footer />
+    </newContext.Provider>
+  );
+
+  const contactLink = screen.getByText(/contact us/i);
+  expect(contactLink).toBeInTheDocument();
 });

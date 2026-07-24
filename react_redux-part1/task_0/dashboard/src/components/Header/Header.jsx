@@ -1,21 +1,41 @@
-import HbSLogo from '../../assets/holberton-logo.jpg';
+import logo from "../../assets/holberton-logo.jpg";
+import { StyleSheet, css } from "aphrodite";
 
-function Header({ user, logOut }) {
+const styles = StyleSheet.create({
+  header: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  logo: {
+    height: "30vmin",
+    pointerEvents: "none",
+  },
+  h1: {
+    color: "#e1003c",
+    fontFamily: "Roboto, sans-serif",
+    fontWeight: "bold",
+    fontSize: "2.5rem",
+    margin: 0,
+  },
+  a: {
+    fontFamily: "Roboto, sans-serif",
+    fontSize: "1.2rem",
+    marginLeft: "auto",
+    cursor: "pointer",
+  },
+});
 
+export default function Header({ user, logOut }) {
   return (
-    <>
-      <div className='App-header flex flex-col md:flex-row items-center md:items-start mb-6'>
-        <img className='w-[35%] md:w-[15%]' src={HbSLogo} alt="holberton logo" />
-        <h1 className='self-center md:ml-4 text-[var(--main-color)] font-bold text-2xl sm:text-4xl'>School dashboard</h1>
-      </div>
-
-      {user.isLoggedIn && (
-        <section id="logoutSection">
-          <p>Welcome <strong>{user.email}</strong> <a onClick={logOut} href="#">(logout)</a></p>
-        </section>
-      )}
-    </>
-  )
+    <div className={css(styles.header)}>
+      <img src={logo} className={css(styles.logo)} alt="holberton logo" />
+      <h1 className={css(styles.h1)}>School Dashboard</h1>
+      {user.isLoggedIn ? (
+        <div id="logoutSection" className={css(styles.logoutSection)}>
+          Welcome <b>{user.email}</b> <a className={css(styles.a)} href="#" onClick={logOut}>(logout)</a>
+        </div>
+      ) : null}
+    </div>
+  );
 }
-
-export default Header;

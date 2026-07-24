@@ -1,25 +1,32 @@
 import { render, screen } from '@testing-library/react';
 import CourseList from './CourseList';
 
-const courses = [
-  { id: 1, name: 'ES6', credit: 60 },
-  { id: 2, name: 'Webpack', credit: 20 },
-  { id: 3, name: 'React', credit: 40 },
-];
 
-describe('CourseList component', () => {
-  test('renders 5 rows when courses are provided', () => {
-    render(<CourseList courses={courses} />);
+test('it should render the CourseList component with 5 rows', () => {
+  const props = {
+    courses : [
+      { id:1, name:'ES6', credit:60 },
+      { id:2, name:'Webpack', credit:20 },
+      { id:3, name:'React', credit:40 }
+    ]
+  }
+  render(<CourseList {...props} />)
 
-    expect(screen.getAllByRole('row')).toHaveLength(5);
-  });
+  const rowElements = screen.getAllByRole('row');
 
-  test('renders 1 row when courses is empty', () => {
-    render(<CourseList courses={[]} />);
+  expect(rowElements).toHaveLength(5)
+})
 
-    expect(screen.getAllByRole('row')).toHaveLength(1);
-    expect(
-      screen.getByText(/no course available yet/i)
-    ).toBeInTheDocument();
-  });
-});
+test('it should render the CourseList component with 1 row', () => {
+  const props = {
+    courses : []
+  }
+
+  render(<CourseList {...props} />)
+
+  const rowElement = screen.getAllByRole('row');
+  const rowText = screen.getByText(/No course available yet/i);
+
+  expect(rowElement).toHaveLength(1)
+  expect(rowText).toBeInTheDocument()
+})

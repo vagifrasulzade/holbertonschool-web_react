@@ -1,78 +1,82 @@
-import { configureStore } from "@reduxjs/toolkit";
-import coursesReducer, {fetchCourses} from '../courses/coursesSlice';
+import coursesSlice, { fetchCourses } from "../courses/coursesSlice";
 import { logout } from "../auth/authSlice";
+import mockAxios from "jest-mock-axios";
 
-const mockCourses = [
-  {
-    "id": 1,
-    "name": "ES6",
-    "credit": "60"
-  },
-  {
-    "id": 2,
-    "name": "Webpack",
-    "credit": "20"
-  },
-  {
-    "id": 3,
-    "name": "React",
-    "credit": "40"
-  }
-]
+afterEach(() => {
+  mockAxios.reset();
+});
 
-describe('coursesSlice', () => {
-  let store;
+describe("coursesSlice", () => {
+  const initialState = {
+    courses: [],
+  };
 
-  beforeEach (() => {
-    store = configureStore({
-      reducer: {
-        courses: coursesReducer
-      }
+  test("should return the initial state", () => {
+    expect(coursesSlice(undefined, { type: "unknown" })).toEqual(initialState);
+  });
+
+  describe("fetchCourses async thunk", () => {
+    test("should handle fetchCourses.pending", () => {
+      const action = { type: fetchCourses.pending.type };
+      const state = coursesSlice(initialState, action);
+      expect(state).toEqual({
+        ...initialState,
+      });
     });
-    global.fetch = jest.fn();
-  });
 
-  afterEach (() => {
-    jest.restoreAllMocks();
-  });
-
-  test('Vérification de la valeur par défaut du state', () => {
-    const state = coursesReducer(undefined, {});
-    expect(state.courses).toEqual([]);
-  });
-
-
-  test('Vérification de le fetch fonctionne correctement', async () => {
-    // Simulation du fetch
-    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockCourses)
+    test("should handle fetchCourses.rejected", () => {
+      const action = {
+        type: fetchCourses.rejected.type,
+      };
+      const state = coursesSlice(initialState, action);
+      expect(state).toEqual({
+        ...initialState,
+      });
     });
-    // Dispatch du thunk
-    await store.dispatch(fetchCourses());
 
-    // Récupération de l'état et du tableau attendu
-    const state = store.getState().courses;
+    test("test courses", async () => {
+      const courses = [
+        { id: 1, name: "ES6", credit: 60 },
+        { id: 2, name: "Webpack", credit: 20 },
+        { id: 3, name: "React", credit: 40 },
+      ];
 
-    expect(state.courses).toEqual(mockCourses);
-  });
+      const dispatch = jest.fn();
+      const getState = jest.fn();
 
-  test('Vérification que quand logout est appelé le tableau est reset', async () => {
-    // Simulation du fetch
-    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
-      json: jest.fn().mockResolvedValue(mockCourses)
+      const promise = fetchCourses()(dispatch, getState, null);
+
+      mockAxios.mockResponse({ data: { courses } });
+
+      await promise;
+
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch.mock.calls[0][0].type).toEqual(
+        fetchCourses.pending.type
+      );
+
+      const fulfilledAction = dispatch.mock.calls[1][0];
+      expect(fulfilledAction.type).toEqual(fetchCourses.fulfilled.type);
+
+      expect(fulfilledAction.payload).toEqual(courses);
     });
-    // Dispatch du thunk
-    await store.dispatch(fetchCourses());
-
-    // Récupération de l'état et du tableau attendu
-    let state = store.getState().courses;
-
-    expect(state.courses).toEqual(mockCourses);
-
-    // Appel à logout
-    store.dispatch(logout());
-
-    state = store.getState().courses;
-    expect(state.courses).toEqual([]);
   });
-})
+
+  describe("logout action", () => {
+    test("should reset courses array on logout", () => {
+      const stateWithCourses = {
+        courses: [
+          { id: 1, title: "Introduction to Programming" },
+          { id: 2, title: "Advanced Mathematics" },
+        ],
+      };
+
+      const action = { type: logout.type };
+      const state = coursesSlice(stateWithCourses, action);
+
+      expect(state).toEqual({
+        courses: [],
+      });
+    });
+  });
+});

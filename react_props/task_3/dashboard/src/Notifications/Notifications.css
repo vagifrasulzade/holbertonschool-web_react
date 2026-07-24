@@ -1,32 +1,34 @@
 .notification-items {
   position: relative;
-  width: 100%;
-  padding: 10px;
-  border: 1px dashed #e1003c;
-  font-size: 5px;
+  border: 3px dotted #e1003c;
+  padding: 5px;
+  font-family: 'Roboto', sans-serif;
 }
 
-.notification-items p {
-  margin: 0 0 10px;
-}
-
-.notification-items ul {
-  margin: 0;
-  padding-left: 15px;
-}
-
-.notification-items li {
-  margin: 4px 0;
-}
-
-.notification-items li[data-priority='default'] {
+li[data-priority="default"] {
   color: blue;
 }
 
-.notification-items li[data-priority='urgent'] {
-  color: red;
+li[data-priority="urgent"] {
+  color: rgb(233, 67, 67);
 }
 
-.notification-items button img {
-  display: block;
+.notification-items button {
+  position: absolute;
+  right: calc(0% - 480px);
+  top: calc(0% - 480px);
+  background: transparent;
+  transform: scale(0.012);
+  -webkit-transform: scale(0.012);
+  -moz-transform: scale(0.012);
+  -ms-transform: scale(0.012);
+  -o-transform: scale(0.012);
+}
+
+.menuItem {
+  float: right;
+  position: absolute;
+  background-color: red;
+  right: 10px;
+  top: 2px;
 }

@@ -1,52 +1,53 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import Notifications from './Notifications';
+import { render, screen, fireEvent } from "@testing-library/react";
+import Notifications from "./Notifications";
+import { getLatestNotification } from "../utils/utils";
 
-describe('Notifications component', () => {
-  test('renders the notifications title', () => {
-    render(<Notifications />);
+jest.mock("../utils/utils", () => ({
+  getLatestNotification: jest.fn(),
+}));
 
-    const title = screen.getByText(
-      /here is the list of notifications/i
+describe("Notifications component", () => {
+  beforeEach(() => {
+    getLatestNotification.mockReturnValue(
+      "<strong>Urgent requirement</strong> - complete by EOD"
     );
-
-    expect(title).toBeInTheDocument();
   });
 
-  test('renders the close button', () => {
+  test("renders the notifications title", () => {
     render(<Notifications />);
-
-    const button = screen.getByRole('button', {
-      name: /close/i,
-    });
-
-    expect(button).toBeInTheDocument();
+    const titleElement = screen.getByText(/Here is the list of notifications/i);
+    expect(titleElement).toBeInTheDocument();
   });
 
-  test('renders 3 notification items', () => {
+  test("renders the close button", () => {
     render(<Notifications />);
-
-    const items = screen.getAllByRole('listitem');
-
-    expect(items).toHaveLength(3);
+    const buttonElement = screen.getByRole("button", { name: /close/i });
+    expect(buttonElement).toBeInTheDocument();
   });
 
-  test('logs a message when the close button is clicked', () => {
-    const logSpy = jest
-      .spyOn(console, 'log')
-      .mockImplementation(() => {});
-
+  test("logs message when close button is clicked", () => {
+    console.log = jest.fn();
     render(<Notifications />);
-
-    const button = screen.getByRole('button', {
-      name: /close/i,
-    });
-
-    fireEvent.click(button);
-
-    expect(logSpy).toHaveBeenCalledWith(
-      'Close button has been clicked'
+    const buttonElement = screen.getByRole("button", { name: /close/i });
+    fireEvent.click(buttonElement);
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringMatching(/close button has been clicked/i)
     );
+  });
 
-    logSpy.mockRestore();
+  test("it should display 3 notification items as expected through props", () => {
+    const props = {
+      notifications: [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        { id: 3, type: "urgent", html: { __html: getLatestNotification() } },
+      ],
+      displayDrawer: true,
+    };
+
+    render(<Notifications {...props} />);
+
+    const listItemElements = screen.getAllByRole("listitem");
+    expect(listItemElements).toHaveLength(3);
   });
 });

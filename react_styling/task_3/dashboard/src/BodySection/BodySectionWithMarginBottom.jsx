@@ -1,16 +1,11 @@
 import BodySection from './BodySection';
 
-function BodySectionWithMarginBottom({
-  title = '',
-  children = null,
-}) {
+export default function BodySectionWithMarginBottom({ title, children }) {
   return (
-    <div className="bodySectionWithMargin mb-10">
+    <div className="bodySectionWithMargin">
       <BodySection title={title}>
         {children}
       </BodySection>
     </div>
   );
 }
-
-export default BodySectionWithMarginBottom;

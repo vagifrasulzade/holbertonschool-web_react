@@ -1,167 +1,56 @@
-import { Component } from 'react';
-import closeButton from '../assets/close-button.png';
-import NotificationItem from './NotificationItem';
+import React from "react";
+import closeIcon from "../assets/close-icon.png";
+import NotificationItem from "./NotificationItem";
 
-class Notifications extends Component {
-  static defaultProps = {
-    notifications: [],
-    displayDrawer: false,
-  };
-
-  handleClick = () => {
-    console.log('Close button has been clicked');
-  };
+export default class Notifications extends React.Component {
+  constructor(props) {
+    super(props);
+  }
 
   markAsRead = (id) => {
-    console.log(`Notification ${id} has been marked as read`);
+    console.log(`Notification ${id + 1} has been marked as read`);
   };
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(nextProps, nextState) {
     return (
-      nextProps.notifications.length
-      !== this.props.notifications.length
+      this.props.notifications.length !== nextProps.notifications.length ||
+      this.props.displayDrawer !== nextProps.displayDrawer
     );
   }
 
   render() {
-    const { notifications, displayDrawer } = this.props;
-
-    const shouldBounce =
-      notifications.length > 0 && !displayDrawer;
+    const { notifications = [], displayDrawer = true } = this.props;
 
     return (
-      <div
-        className="
-          relative
-          min-[912px]:absolute
-          min-[912px]:right-4
-          min-[912px]:top-2
-          min-[912px]:z-20
-          min-[912px]:w-1/4
-        "
-      >
-        <p
-          className={`
-            notification-title
-            absolute
-            right-4
-            top-2
-            whitespace-nowrap
-            text-right
-            text-[8px]
-            min-[520px]:text-[10px]
-            min-[912px]:right-0
-            min-[912px]:top-0
-            min-[912px]:text-[8px]
-            ${shouldBounce ? 'animate-bounce' : ''}
-          `}
+      <>
+        <div
+          className={`notification-title absolute right-3 top-1 whitespace-nowrap ${
+            notifications.length > 0 && displayDrawer === false
+              ? "animate-bounce"
+              : ""
+          }`}
         >
-          Your Notifications
-        </p>
-
-        {displayDrawer && (
-          <div
-            className="
-              notification-items
-              fixed
-              inset-0
-              z-50
-              h-screen
-              w-screen
-              overflow-y-auto
-              border
-              border-dashed
-              border-main
-              bg-white
-              p-3
-              text-sm
-              min-[520px]:text-base
-              min-[912px]:absolute
-              min-[912px]:inset-auto
-              min-[912px]:right-0
-              min-[912px]:top-6
-              min-[912px]:h-auto
-              min-[912px]:w-full
-              min-[912px]:overflow-visible
-              min-[912px]:p-[6px]
-              min-[912px]:text-[8px]
-            "
-          >
-            {notifications.length > 0 && (
-              <button
-                type="button"
-                aria-label="Close"
-                onClick={this.handleClick}
-                className="
-                  absolute
-                  right-3
-                  top-3
-                  flex
-                  h-7
-                  w-7
-                  cursor-pointer
-                  items-center
-                  justify-center
-                  border-none
-                  bg-transparent
-                  min-[912px]:right-1
-                  min-[912px]:top-1
-                  min-[912px]:h-4
-                  min-[912px]:w-4
-                "
-              >
-                <img
-                  src={closeButton}
-                  alt="Close"
-                  className="
-                    h-4
-                    w-4
-                    min-[912px]:h-2
-                    min-[912px]:w-2
-                  "
-                />
-              </button>
-            )}
-
-            {notifications.length === 0 ? (
-              <p
-                className="
-                  pr-8
-                  text-sm
-                  min-[912px]:text-[8px]
-                "
-              >
-                No new notification for now
-              </p>
-            ) : (
-              <>
-                <p
-                  className="
-                    mb-4
-                    pr-8
-                    text-[15px]
-                    min-[520px]:text-base
-                    min-[912px]:mb-1
-                    min-[912px]:text-[8px]
-                  "
-                >
+          Your notifications
+        </div>
+        {displayDrawer ? (
+          <div className="notification-items relative border-[3px] border-dotted border-[color:var(--main-color)] right-3 p-1.5 w-[380px] float-right mt-7 max-[912px]:w-full max-[912px]:fixed max-[912px]:top-0 max-[912px]:left-0 max-[912px]:right-0 max-[912px]:bottom-0 max-[912px]:z-50 max-[912px]:float-none max-[912px]:m-0 max-[912px]:p-3 max-[912px]:bg-white max-[912px]:overflow-y-hidden max-[912px]:h-screen max-[430px]:overflow-y-hidden max-[430px]:h-screen">
+            {notifications.length > 0 ? (
+              <div className="relative">
+                <p className="m-0 max-[912px]:text-[20px]">
                   Here is the list of notifications
                 </p>
-
-                <ul
-                  className="
-                    list-none
-                    space-y-1
-                    p-0
-                    min-[912px]:list-disc
-                    min-[912px]:space-y-0
-                    min-[912px]:pl-4
-                  "
+                <button
+                  onClick={() => console.log("Close button has been clicked")}
+                  aria-label="Close"
+                  className="absolute cursor-pointer right-0 top-0 bg-transparent"
                 >
-                  {notifications.map((notification) => (
+                  <img src={closeIcon} alt="close icon" className="w-3 h-3" />
+                </button>
+                <ul className="list-[square] pl-5 max-[912px]:p-0 max-[912px]:list-none">
+                  {notifications.map((notification, index) => (
                     <NotificationItem
+                      id={index}
                       key={notification.id}
-                      id={notification.id}
                       type={notification.type}
                       value={notification.value}
                       html={notification.html}
@@ -169,13 +58,17 @@ class Notifications extends Component {
                     />
                   ))}
                 </ul>
-              </>
+              </div>
+            ) : (
+              <p className="max-[912px]:text-[20px]">
+                No new notification for now
+              </p>
             )}
           </div>
+        ) : (
+          []
         )}
-      </div>
+      </>
     );
   }
 }
-
-export default Notifications;

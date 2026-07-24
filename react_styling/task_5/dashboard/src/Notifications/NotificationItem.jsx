@@ -1,63 +1,34 @@
-import { PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 
-class NotificationItem extends PureComponent {
-  static defaultProps = {
-    id: 0,
-    type: 'default',
-    html: null,
-    value: '',
-    markAsRead: () => {},
-  };
-
-  handleClick = () => {
-    const { id, markAsRead } = this.props;
-    markAsRead(id);
-  };
-
+export default class NotificationItem extends PureComponent {
   render() {
-    const { type, html, value } = this.props;
-
-    const colorClass = type === 'urgent'
-      ? 'text-urgent-notification-item'
-      : 'text-default-notification-item';
-
-    const itemClass = `
-      ${colorClass}
-      block
-      border-b
-      border-gray-600
-      p-3
-      text-[15px]
-      leading-6
-      min-[520px]:text-base
-      min-[912px]:list-item
-      min-[912px]:border-0
-      min-[912px]:p-0
-      min-[912px]:text-[8px]
-      min-[912px]:leading-normal
-    `;
-
-    if (html) {
+    const { type, html, value, markAsRead, id } = this.props;
+    
+    if (type === 'default') {
       return (
-        <li
+        <li 
+          className="text-[color:var(--default-notification-item)] pl-1 max-[912px]:text-[20px] max-[912px]:w-full max-[912px]:border-b max-[912px]:border-black max-[912px]:p-[10px_8px]"
           data-notification-type={type}
-          className={itemClass}
-          onClick={this.handleClick}
+          onClick={() => markAsRead(id)}
+        >{value}</li>
+      );
+    } else if (type === 'urgent' && html !== undefined) {
+      return (
+        <li 
+          className="text-[color:var(--urgent-notification-item)] pl-1 max-[912px]:text-[20px] max-[912px]:w-full max-[912px]:border-b max-[912px]:border-black max-[912px]:p-[10px_8px]"
+          data-notification-type={type} 
           dangerouslySetInnerHTML={html}
-        />
+          onClick={() => markAsRead(id)}
+        ></li>
+      );
+    } else {
+      return (
+        <li 
+          className="text-[color:var(--urgent-notification-item)] pl-1 max-[912px]:text-[20px] max-[912px]:w-full max-[912px]:border-b max-[912px]:border-black max-[912px]:p-[10px_8px]"
+          data-notification-type={type}
+          onClick={() => markAsRead(id)}
+        >{value}</li>
       );
     }
-
-    return (
-      <li
-        data-notification-type={type}
-        className={itemClass}
-        onClick={this.handleClick}
-      >
-        {value}
-      </li>
-    );
   }
 }
-
-export default NotificationItem;

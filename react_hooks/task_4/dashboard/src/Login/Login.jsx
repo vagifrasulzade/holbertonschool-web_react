@@ -1,63 +1,135 @@
-import { useState } from 'react';
-import WithLogging from '../HOC/WithLogging';
+import { useState } from "react";
+import { StyleSheet, css } from "aphrodite";
+import WithLogging from "../HOC/WithLogging";
 
-// Déclaration de la constante emailRegex
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
+const styles = StyleSheet.create({
+  body: {
+    display: "flex",
+    flexDirection: "column",
+    height: "60vh",
+    padding: "20px 20px 20px 40px",
+    borderTop: "5px red solid",
+  },
+  p: {
+    fontFamily: "Roboto, sans-serif",
+    fontSize: "1.3rem",
+  },
+  form: {
+    margin: "20px 0",
+    fontSize: "1.2rem",
+    fontFamily: "Roboto, sans-serif",
+    display: "flex",
+    flexDirection: "row",
+    "@media (max-width: 900px)": {
+      flexDirection: "column",
+    },
+  },
+  label: {
+    paddingRight: "10px",
+    "@media (max-width: 900px)": {
+      display: "block",
+    },
+  },
+  input: {
+    marginRight: "10px",
+    "@media (max-width: 900px)": {
+      display: "block",
+      marginBottom: "10px",
+      paddingBottom: "5px",
+      paddingTop: "5px",
+      fontSize: "20px",
+      width: "100%",
+      boxSizing: "border-box",
+    },
+  },
+  button: {
+    cursor: "pointer",
+    "@media (max-width: 900px)": {
+      display: "block",
+      marginTop: "10px",
+      paddingBottom: "5px",
+      paddingTop: "5px",
+      fontSize: "16px",
+      width: "100%",
+      boxSizing: "border-box",
+    },
+  },
+});
 
-function Login({ email, password, logIn }) {
-
-  const [formData, setFormData] = useState({ email: '', password: '' });
+const Login = ({ logIn, email = "", password = "" }) => {
   const [enableSubmit, setEnableSubmit] = useState(false);
+  const [formData, setFormData] = useState({
+    email,
+    password,
+  });
 
-  const handleLoginSubmit = (event) => {
-    event.preventDefault();
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleChangeEmail = (e) => {
+    const newEmail = e.target.value;
+    const { password } = formData;
+
+    setFormData((prev) => ({
+      ...prev,
+      email: newEmail,
+    }));
+    setEnableSubmit(validateEmail(newEmail) && password.length >= 8);
+  };
+
+  const handleChangePassword = (e) => {
+    const newPassword = e.target.value;
+    const { email } = formData;
+
+    setFormData((prev) => ({
+      ...prev,
+      password: newPassword,
+    }));
+    setEnableSubmit(validateEmail(email) && newPassword.length >= 8);
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
     logIn(formData.email, formData.password);
-  }
-
-  const handleChangeEmail = (event) => {
-    const newEmail = event.target.value;
-    setFormData({ email: newEmail, password: formData.password });
-    setEnableSubmit(emailRegex.test(newEmail) && formData.password.length >= 8);
-  }
-
-  const handleChangePassword = (event) => {
-    const newPassword = event.target.value;
-    setFormData({ email: formData.email, password: newPassword });
-    setEnableSubmit(newPassword.length >= 8 && emailRegex.test(formData.email));
-  }
+  };
 
   return (
-    <div className='App-body flex-1 text-justify border-t border-t-[2.5px] border-t-[var(--main-color)]'>
-      <p className='ml-4 mt-4 mb-4'>Login to access the full dashboard</p>
-
-      <form className='md:flex md:flex-row md:items-center' onSubmit={handleLoginSubmit} >
-        <div className='flex flex-col md:flex-row'>
-          <label className='mt-2 md:mt-0 ml-4' htmlFor="email">Email :</label>
-          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded'
-            type="email" name="email" id="email" onChange={handleChangeEmail} value={formData.email} />
-        </div>
-
-        <div className='flex flex-col md:flex-row'>
-          <label className='mt-2 md:mt-0 ml-4' htmlFor="password">Password :</label>
-          <input className='ml-4 w-3/5 md:w-auto border border-gray-400 px-1 rounded'
-            type="password" name="password" id="password" onChange={handleChangePassword} value={formData.password} />
-        </div>
-
-        <input type='submit' disabled={!enableSubmit} value={'OK'}
-          className={`mt-2 md:mt-0 ml-4 border border-black px-2 cursor-pointer rounded ${enableSubmit ? 'opacity-100' : 'opacity-50'}`} />
+    <div className={css(styles.body)}>
+      <p className={css(styles.p)}>Login to access the full dashboard</p>
+      <form className={css(styles.form)} onSubmit={handleLoginSubmit}>
+        <label htmlFor="email" className={css(styles.label)}>
+          Email
+        </label>
+        <input
+          type="email"
+          name="user_email"
+          id="email"
+          className={css(styles.input)}
+          value={formData.email}
+          onChange={handleChangeEmail}
+        />
+        <label htmlFor="password" className={css(styles.label)}>
+          Password
+        </label>
+        <input
+          type="password"
+          name="user_password"
+          id="password"
+          className={css(styles.input)}
+          value={formData.password}
+          onChange={handleChangePassword}
+        />
+        <input
+          type="submit"
+          value="OK"
+          className={css(styles.button)}
+          disabled={!enableSubmit}
+        />
       </form>
     </div>
-  )
-}
+  );
+};
 
-Login.defaultProps = {
-  email: '',
-  password: '',
-  logIn: () => {}
-}
-
-
-const LoginWithLogging = WithLogging(Login);
-
-
-export default LoginWithLogging;
+export default WithLogging(Login);

@@ -1,10 +1,30 @@
-import HbSLogo from '../assets/holberton-logo.jpg';
+import { StyleSheet, css } from 'aphrodite';
+import logo from '../assets/holberton-logo.jpg';
+
+const styles = StyleSheet.create({
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  logo: {
+    height: '30vmin',
+    pointerEvents: 'none'
+  },
+  h1: {
+    color: '#e1003c',
+    fontFamily: 'Roboto, sans-serif',
+    fontWeight: 'bold',
+    fontSize: '2.5rem',
+    margin: 0
+  }
+});
 
 function Header() {
   return (
-    <div className='App-header flex flex-col md:flex-row items-center md:items-start mb-6'>
-      <img className='w-[35%] md:w-[15%]' src={HbSLogo} alt="holberton logo" />
-      <h1 className='self-center md:ml-4 text-[var(--main-color)] font-bold text-2xl sm:text-4xl'>School dashboard</h1>
+    <div className={css(styles.header)}>
+      <img src={logo} className={css(styles.logo)} alt="holberton logo" />
+      <h1 className={css(styles.h1)}>School Dashboard</h1>
     </div>
   )
 }

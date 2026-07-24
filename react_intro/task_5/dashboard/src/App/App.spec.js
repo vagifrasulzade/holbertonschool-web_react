@@ -1,32 +1,36 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import {render, screen} from "@testing-library/react"
+import App from "./App";
 
-describe('App Component Tests', () => {
-  test('renders the email and password input elements', () => {
-    render(<App />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+test('renders School Dashboard heading', () => {
+  render(<App />);
+  const headingElement = screen.getByRole('heading', { name: /School dashboard/i });
+  expect(headingElement).toBeInTheDocument();
 
-    expect(emailInput).toBeInTheDocument();
-    expect(passwordInput).toBeInTheDocument();
-  });
+});
 
-  test('renders the Email and Password labels', () => {
-    render(<App />);
+test('renders App body text', () => {
+  render(<App />);
+  const bodyElement = screen.getByText(/Login to access the full dashboard/i);
+  expect(bodyElement.closest('.App-body')).toBeInTheDocument();
+});
 
-    const emailLabel = screen.getByText(/email/i);
-    const passwordLabel = screen.getByText(/password/i);
+test('renders App img', () => {
+  render(<App />);
+  const imgElement = screen.getByRole('img', { name: /holberton logo/i });
+  expect(imgElement).toBeInTheDocument();
+});
 
-    expect(emailLabel).toBeInTheDocument();
-    expect(passwordLabel).toBeInTheDocument();
-  });
+test('renders 2 label elements with text Email and Password', () => {
+  render(<App />);
+  const emailInput = screen.getByText(/email/i);
+  const passwordInput = screen.getByText(/password/i);
+  expect(emailInput).toBeInTheDocument();
+  expect(passwordInput).toBeInTheDocument();
+});
 
-  test('renders the OK button', () => {
-    render(<App />);
-
-    const button = screen.getByRole('button', { name: /^ok$/i });
-
-    expect(button).toBeInTheDocument();
-  });
+test('renders a button with the text OK', () => {
+  render(<App />);
+  const buttonElement = screen.getByRole('button', { name: /ok/i });
+  expect(buttonElement).toBeInTheDocument();
 });

@@ -1,2 +1,1 @@
-# React Redux (PART 2)
-
+## React Redux (PART 2)

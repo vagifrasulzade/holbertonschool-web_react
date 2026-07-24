@@ -1,20 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import Footer from './Footer';
+import { getCurrentYear, getFooterCopy } from '../utils/utils';
 
-describe('Footer component tests', () => {
-  test('renders Footer without crashing', () => {
-    render(<Footer />);
-  });
 
-  test('renders the correct copyright text', () => {
-    render(<Footer />);
+test('It should rendered "copyright {year} - holberton school" whenever isIndex is set to true', () => {
+  render(<Footer />)
 
-    const currentYear = new Date().getFullYear();
+  const footerParagraph = screen.getByText(`Copyright ${getCurrentYear()} - ${getFooterCopy(true)}`);
 
-    expect(
-      screen.getByText(
-        new RegExp(`Copyright ${currentYear} - Holberton School`, 'i')
-      )
-    ).toBeInTheDocument();
-  });
+  expect(footerParagraph).toHaveTextContent(new RegExp(`copyright ${(new Date()).getFullYear()} - holberton School`, 'i'))
 });

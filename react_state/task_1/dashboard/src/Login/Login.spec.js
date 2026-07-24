@@ -1,115 +1,175 @@
-import { render, screen } from '@testing-library/react';
-import { userEvent } from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'
 import Login from './Login';
 
-describe('App component', () => {
-  test('Vérification texte App-body', () => {
-    render(<Login />);
-    const bodyp = screen.getByText(/Login to access the full dashboard/i);
-    expect(bodyp).toBeInTheDocument();
-  });
+test('testing signin form elements', () => {
+  render(<Login />);
 
-  test('Vérification des inputs associés aux labels', () => {
-    render(<Login />);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    expect(emailInput).toBeInTheDocument();
-    expect(passwordInput).toBeInTheDocument();
-  });
+  const inputElements = screen.getAllByLabelText(/email|password/i);
+  const emailLabelElement = screen.getByLabelText(/email/i);
+  const passwordLabelElement = screen.getByLabelText(/password/i);
+  const buttonElementText = screen.getByRole('button', { name: 'OK' })
 
-  test('Vérification du texte des labels', () => {
-    render(<Login />);
-    const emailLabel = screen.getByLabelText(/email/i);
-    const passwordLabel = screen.getByLabelText(/password/i);
-    expect(emailLabel).toBeInTheDocument();
-    expect(passwordLabel).toBeInTheDocument();
-  });
+  expect(inputElements).toHaveLength(2)
+  expect(emailLabelElement).toBeInTheDocument()
+  expect(passwordLabelElement).toBeInTheDocument()
+  expect(buttonElementText).toBeInTheDocument()
+});
 
-  test('Vérification de la présence du bouton', () => {
-    render(<Login />);
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(formButton).toBeInTheDocument();
-  });
+test('it should check that the email input element will be focused whenever the associated label is clicked', async () => {
+  render(<Login />)
 
-  test("Vérification du focus sur l'imput associé au label sélectionné", async () => {
-    render(<Login />);
-    const user = userEvent.setup();
+  const emailInput = screen.getByLabelText('Email');
+  const emailLabel = screen.getByText('Email');
 
-    const emailLabel = screen.getByText(/email/i);
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordLabel = screen.getByText(/password/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+  userEvent.click(emailLabel);
 
-    await user.click(emailLabel);
+  await waitFor(() => {
     expect(emailInput).toHaveFocus();
+  });
+})
 
-    await user.click(passwordLabel);
+test('it should check that the password input element will be focused whenver the associated label is clicked', async () => {
+  render(<Login />)
+
+  const passwordLabel = screen.getByText('Password');
+  const passwordInput = screen.getByLabelText('Password');
+
+  userEvent.click(passwordLabel);
+
+  await waitFor(() => {
     expect(passwordInput).toHaveFocus();
   });
+});
 
-  test('Vérification que le bouton soit désactivé par défaut', () => {
-    render(<Login />);
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(formButton).toBeDisabled();
+test('submit button is disabled by default', () => {
+  render(<Login />);
+
+  const submitButton = screen.getByRole('button', { name: 'OK' });
+
+  expect(submitButton).toBeDisabled();
+});
+
+test('submit button is enabled after entering valid email and password', async () => {
+  const user = userEvent.setup();
+  render(<Login />);
+
+  const emailInput = screen.getByLabelText('Email');
+  const passwordInput = screen.getByLabelText('Password');
+  const submitButton = screen.getByRole('button', { name: 'OK' });
+
+  expect(submitButton).toBeDisabled();
+
+  await user.type(emailInput, 'test@example.com');
+
+  expect(submitButton).toBeDisabled();
+
+  await user.type(passwordInput, 'password123');
+
+  await waitFor(() => {
+    expect(submitButton).toBeEnabled();
   });
+});
 
-  test("Vérification que le bouton soit désactivé quand l'email est invalide", async () => {
-    render(<Login />);
+describe('Password Validation Tests', () => {
+  test('submit button remains disabled when password is less than 8 characters', async () => {
     const user = userEvent.setup();
-    // Déclaration des différentes valeurs invalides
-    const invalidEmails = [
-      'Raidraptors',
-      'fallen@',
-      'fallen@albaz',
-      'hakuyoku.Ciel@.c',
-      '@gmail.com'
-    ]
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const formButton = screen.getByRole('button', { name: /OK/i });
+    render(<Login />);
 
-    await user.type(passwordInput, 'Azertyuiop');
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: 'OK' });
 
-    for (const invalidEmail of invalidEmails) {
-      await user.clear(emailInput);
-      await user.type(emailInput, invalidEmail);
-      expect(formButton).toBeDisabled();
+    await user.type(emailInput, 'test@example.com');
+
+    const shortPasswords = [
+      '',
+      '1',
+      'ab',
+      'abc',
+      'pass',
+      'pass1',
+      'pass12',
+      'pass123',
+    ];
+
+    for (const shortPassword of shortPasswords) {
+      await user.clear(passwordInput);
+      if (shortPassword) {
+        await user.type(passwordInput, shortPassword);
+      }
+
+      await waitFor(() => {
+        expect(submitButton).toBeDisabled();
+      });
     }
-
-    await user.clear(emailInput);
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    expect(formButton).toBeEnabled();
   });
 
-  test("Vérification que le bouton soit désactivé quand le password fait moins de 8 caractères", async () => {
-    render(<Login />);
+  test('submit button is enabled when password is exactly 8 characters or more', async () => {
     const user = userEvent.setup();
+    render(<Login />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const formButton = screen.getByRole('button', { name: /OK/i });
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: 'OK' });
 
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    // Test avec 7 caractères
-    await user.type(passwordInput, 'Azertyu');
-    expect(formButton).toBeDisabled();
+    await user.type(emailInput, 'test@example.com');
 
-    // On rajoute 3 caractères, ce qui fait un total de 10 caractères.
-    await user.type(passwordInput, 'iop');
-    expect(formButton).toBeEnabled();
+    const validPasswords = [
+      'pass1234',
+      'password',
+      'password123',
+      'VeryLongPassword123!',
+      '12345678',
+      'P@ssw0rd',
+    ];
+
+    for (const validPassword of validPasswords) {
+      await user.clear(passwordInput);
+      await user.type(passwordInput, validPassword);
+
+      await waitFor(() => {
+        expect(submitButton).toBeEnabled();
+      });
+    }
   });
 
-  test('Vérification que le bouton soit activé quand les champs sont correctement remplis', async () => {
-    render(<Login />);
+  test('submit button state changes from enabled to disabled when password becomes too short', async () => {
     const user = userEvent.setup();
+    render(<Login />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: 'OK' });
 
-    await user.type(emailInput, 'fallen.albaz@gmail.com');
-    await user.type(passwordInput, 'Azertyuiop');
+    await user.type(emailInput, 'valid@email.com');
+    await user.type(passwordInput, 'validpassword');
 
-    const formButton = screen.getByRole('button', { name: /OK/i });
-    expect(formButton).toBeEnabled();
+    await waitFor(() => {
+      expect(submitButton).toBeEnabled();
+    });
+
+    await user.clear(passwordInput);
+    await user.type(passwordInput, 'short');
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+    });
+  });
+
+  test('submit button remains disabled when password is 8 chars but email is invalid', async () => {
+    const user = userEvent.setup();
+    render(<Login />);
+
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: 'OK' });
+
+    await user.type(emailInput, 'invalid-email');
+    await user.type(passwordInput, 'password123');
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+    });
   });
 });

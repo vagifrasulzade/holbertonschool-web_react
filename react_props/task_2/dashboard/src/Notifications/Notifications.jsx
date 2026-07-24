@@ -1,37 +1,11 @@
 import './Notifications.css';
-import closeButton from '../assets/close-button.png';
+import closeIcon from '../assets/close-icon.png';
 import NotificationItem from './NotificationItem';
 
-function Notifications({ notifications = [] }) {
-  const handleClick = () => {
-    console.log('Close button has been clicked');
-  };
-
+export default function Notifications({ notifications = [] }) {
   return (
-    <div className="notification-items">
-      <button
-        type="button"
-        aria-label="Close"
-        onClick={handleClick}
-        style={{
-          position: 'absolute',
-          right: '10px',
-          top: '10px',
-          background: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        <img
-          src={closeButton}
-          alt="Close"
-          width="10"
-          height="10"
-        />
-      </button>
-
+    <div className='notification-items'>
       <p>Here is the list of notifications</p>
-
       <ul>
         {notifications.map((notification) => (
           <NotificationItem
@@ -42,8 +16,16 @@ function Notifications({ notifications = [] }) {
           />
         ))}
       </ul>
+      <button
+        aria-label='Close'
+        type='button'
+        onClick={() => console.log('Close button has been clicked')}
+      >
+        <img
+          alt='close-icon'
+          src={closeIcon}
+        />
+      </button>
     </div>
   );
 }
-
-export default Notifications;

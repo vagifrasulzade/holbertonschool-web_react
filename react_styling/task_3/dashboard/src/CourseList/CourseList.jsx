@@ -1,46 +1,31 @@
-import CourseListRow from './CourseListRow';
 import WithLogging from '../HOC/WithLogging';
+import CourseListRow from './CourseListRow';
 
 function CourseList({ courses = [] }) {
   return (
-    <div className="mx-auto my-10 w-[78%] overflow-x-auto flex items-center justify-center">
-      <table id="CourseList" className="w-full border-collapse text-[8px] text-black">
-        <thead>
-          {courses.length === 0 ? (
-            <CourseListRow
-              isHeader
-              textFirstCell="No course available yet"
-            />
-          ) : (
-            <>
-              <CourseListRow
-                isHeader
-                textFirstCell="Available courses"
-              />
-
-              <CourseListRow
-                isHeader
-                textFirstCell="Course name"
-                textSecondCell="Credit"
-              />
-            </>
-          )}
-        </thead>
-
-        {courses.length > 0 && (
+    <div className="courses mx-auto my-32 w-4/5">
+      {courses.length > 0 ? (
+        <table className="w-full border-collapse border border-gray-500">
+          <thead>
+            <CourseListRow textFirstCell="Available courses" isHeader={true} />
+            <CourseListRow textFirstCell="Course name" textSecondCell="Credit" isHeader={true} />
+          </thead>
           <tbody>
             {courses.map((course) => (
-              <CourseListRow
-                key={course.id}
-                textFirstCell={course.name}
-                textSecondCell={course.credit}
-              />
+              <CourseListRow key={course.id} textFirstCell={course.name} textSecondCell={course.credit} />
             ))}
           </tbody>
-        )}
-      </table>
+        </table>
+      ) : (
+        <table className="w-full border-collapse border border-gray-500">
+          <thead>
+            <CourseListRow isHeader={true} textFirstCell="No course available yet" />
+          </thead>
+        </table>
+      )}
     </div>
   );
 }
 
-export default WithLogging(CourseList);
+const CourseListWithLogging = WithLogging(CourseList);
+export default CourseListWithLogging

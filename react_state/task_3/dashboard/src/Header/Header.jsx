@@ -1,6 +1,32 @@
 import { Component } from 'react';
-import HbSLogo from '../assets/holberton-logo.jpg';
-import newContext from '../Context/context.js';
+import { StyleSheet, css } from 'aphrodite';
+import logo from '../assets/holberton-logo.jpg';
+import newContext from '../Context/context';
+
+const styles = StyleSheet.create({
+  header: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  logo: {
+    height: '30vmin',
+    pointerEvents: 'none'
+  },
+  h1: {
+    color: '#e1003c',
+    fontFamily: 'Roboto, sans-serif',
+    fontWeight: 'bold',
+    fontSize: '2.5rem',
+    margin: 0
+  },
+  logoutSection: {
+    fontFamily: 'Roboto, sans-serif',
+    fontSize: '1.2rem',
+    marginLeft: 'auto',
+    cursor: 'pointer'
+  }
+});
 
 class Header extends Component {
   static contextType = newContext;
@@ -10,18 +36,17 @@ class Header extends Component {
 
     return (
       <>
-        <div className='App-header flex flex-col md:flex-row items-center md:items-start mb-6'>
-          <img className='w-[35%] md:w-[15%]' src={HbSLogo} alt="holberton logo" />
-          <h1 className='self-center md:ml-4 text-[var(--main-color)] font-bold text-2xl sm:text-4xl'>School dashboard</h1>
+        <div className={css(styles.header)}>
+          <img src={logo} className={css(styles.logo)} alt="holberton logo" />
+          <h1 className={css(styles.h1)}>School Dashboard</h1>
         </div>
-
         {user.isLoggedIn && (
-          <section id="logoutSection">
-            <p>Welcome <strong>{user.email}</strong> <a onClick={logOut} href="#">(logout)</a></p>
+          <section id="logoutSection" className={css(styles.logoutSection)}>
+            Welcome {user.email} (<a onClick={logOut}>logout</a>)
           </section>
         )}
       </>
-    )
+    );
   }
 }
 

@@ -1,28 +1,19 @@
-import './Login.css';
 import WithLogging from '../HOC/WithLogging';
 
 function Login() {
   return (
-    <div className="App-body">
-      <p>Login to access the full dashboard</p>
-
-      <label htmlFor="email">Email:</label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-      />
-
-      <label htmlFor="password">Password:</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-      />
-
-      <button type="button">OK</button>
+    <div className="App-body flex flex-col p-5 pl-10 h-[45vh] border-t-4 border-[color:var(--main-color)]">
+      <p className="text-xl">Login to access the full dashboard</p>
+      <div className="mt-8 text-lg">
+        <label htmlFor="email" className="pr-2">Email</label>
+        <input type="email" name="user_email" id="email" className="border rounded pl-2" />
+        <label htmlFor="password" className="pl-2 pr-2">Password</label>
+        <input type="password" name="user_password" id="password" className="border rounded pl-2" />
+        <button className="cursor-pointer border px-1 rounded ml-2">OK</button>
+      </div>
     </div>
   );
 }
 
-export default WithLogging(Login);
+const LoginWithLogging = WithLogging(Login)
+export default LoginWithLogging;

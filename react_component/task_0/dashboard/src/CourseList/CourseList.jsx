@@ -1,46 +1,48 @@
-import './CourseList.css';
 import CourseListRow from './CourseListRow';
+import './CourseList.css'
 
-function CourseList({ courses = [] }) {
-  if (courses.length === 0) {
-    return (
-      <table id="CourseList">
-        <thead>
-          <CourseListRow
-            isHeader
-            textFirstCell="No course available yet"
-          />
-        </thead>
-      </table>
-    );
-  }
-
+export default function CourseList({ courses = [] }) {
   return (
-    <table id="CourseList">
-      <thead>
-        <CourseListRow
-          isHeader
-          textFirstCell="Available courses"
-        />
-
-        <CourseListRow
-          isHeader
-          textFirstCell="Course name"
-          textSecondCell="Credit"
-        />
-      </thead>
-
-      <tbody>
-        {courses.map((course) => (
-          <CourseListRow
-            key={course.id}
-            textFirstCell={course.name}
-            textSecondCell={course.credit}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className='courses'>
+      {
+        courses.length > 0 ? 
+        (
+          <table id='CourseList'>
+            <thead>
+              <CourseListRow 
+                textFirstCell="Available courses" 
+                isHeader={true} 
+              />
+              <CourseListRow 
+                textFirstCell="Course name" 
+                textSecondCell="Credit" 
+                isHeader={true} 
+              />
+            </thead>
+            <tbody>
+              {
+                courses.map(course => (
+                  <CourseListRow 
+                    key={course.id} 
+                    textFirstCell={course.name} 
+                    textSecondCell={course.credit} 
+                  />
+                ))
+              }
+            </tbody>
+          </table>
+        ) : (
+          <table id='CourseList'>
+            <thead>
+              <CourseListRow 
+                isHeader={true} 
+                textFirstCell="No course available yet" 
+              />
+            </thead>
+          </table>
+        )
+      }
+    </div>
   );
 }
 
-export default CourseList;

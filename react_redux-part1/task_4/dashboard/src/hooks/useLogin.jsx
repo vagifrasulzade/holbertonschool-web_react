@@ -1,34 +1,50 @@
 import { useState } from 'react';
 
-// Déclaration de la constante emailRegex
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,3}$/;
-
-function useLogin(onLogin) {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+export default function useLogin({ onLogin }) {
   const [enableSubmit, setEnableSubmit] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-  const handleLoginSubmit = (event) => {
-    event.preventDefault();
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleChangeEmail = (e) => {
+    const newEmail = e.target.value;
+    const { password } = formData;
+    
+    setFormData(prev => ({
+      ...prev,
+      email: newEmail
+    }));
+    setEnableSubmit(validateEmail(newEmail) && password.length >= 8);
+  };
+
+  const handleChangePassword = (e) => {
+    const newPassword = e.target.value;
+    const { email } = formData;
+    
+    setFormData(prev => ({
+      ...prev,
+      password: newPassword
+    }));
+    setEnableSubmit(validateEmail(email) && newPassword.length >= 8);
+  };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
     onLogin(formData.email, formData.password);
-  }
+  };
 
-  const handleChangeEmail = (event) => {
-    const newEmail = event.target.value;
-    setFormData({ email: newEmail, password: formData.password });
-    setEnableSubmit(emailRegex.test(newEmail) && formData.password.length >= 8);
-  }
-
-  const handleChangePassword = (event) => {
-    const newPassword = event.target.value;
-    setFormData({ email: formData.email, password: newPassword });
-    setEnableSubmit(newPassword.length >= 8 && emailRegex.test(formData.email));
-  }
-  return {email: formData.email,
+  return {
+    email: formData.email,
     password: formData.password,
-    enableSubmit: enableSubmit,
+    enableSubmit,
     handleChangeEmail,
     handleChangePassword,
-    handleLoginSubmit};
+    handleLoginSubmit
+  };
 }
-
-export default useLogin;

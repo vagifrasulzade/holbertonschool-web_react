@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
-import Footer from './Footer';
+import Footer from '../Footer/Footer';
 
-test('renders Footer without crashing', () => {
+test('The Footer component rendered successfully', () => {
   render(<Footer />);
 });
